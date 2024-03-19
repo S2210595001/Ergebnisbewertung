@@ -1,0 +1,572 @@
+Erhobene Befunde:
+Labor: Klinik Hietzing, Kumulativbefund: 'Topas (global)', alle Aufenthalte
+Mustermann Max, geb.:28.01.1959 W, #6520
+
+Hinweis: Es werden nur Befunde vom 13.08.2023 bis 13.08.2023 angezeigt. 
+
+Hinweis: Sämtliche Kumulativbefunde wurden im Zuge von ELGA auf LOINC umgestellt. Ältere Laborbefunde sind nur mehr als Einzelbefund einsehbar. 
+
+
+
+
+
+13.08.23
+12:50 
+
+Blutgasanalytik 
+
+
+
+   pH venös 
+
+7.320-7.400 -
+
+* 7.446 
+
+   pCO2 venös 
+
+42.0-50.0 mm Hg
+
+43.7 
+
+   pO2 venös 
+
+35.0-44.0 mm Hg
+
+* 53.9 
+
+   FO2-Hb venös 
+
+54-69 %
+
+* 87.8 
+
+   O2-Sättigung venös 
+
+54.0-69.0 %
+
+* 90.6 
+
+   Base excess venös 
+
+-2-3 mmol/L
+
+* 5.6 
+
+   Bikarbonat venös 
+
+22-29 mmol/L
+
+29.0 
+
+   Laktat ven. 
+
+0.5-2.2 mmol/L
+
+1.1 
+
+   Natrium ven. 
+
+136-145 mmol/L
+
+136.0 
+
+   Kalium ven. 
+
+3.4-4.5 mmol/L
+
+4.10 
+
+   Calcium ion. ven. 
+
+1.15-1.29 mmol/L
+
+1.19 
+
+   Chlorid ven. 
+
+95-110 mmol/L
+
+* 94.0 
+
+   Bilirubin ven. 
+
+- mg/dL
+
+0.5 
+
+   Glucose ven. 
+
+- mg/dL
+
+87.0 
+
+   Kreatinin ven. 
+
+0.5-1.1 mg/dL
+
+0.5 
+
+   Hct ven. 
+
+20-43 %
+
+41.3 
+
+   Hämoglobin venös 
+
+12.5-16 g/dL
+
+13.4 
+
+   CO-Hämoglobin ven. 
+
+- %
+
+2.5 
+
+   Methämoglobin ven 
+
+- %
+
+0.6 
+
+
+
+
+
+
+
+13.08.23
+13:18 
+
+HÃ¤matologie 
+
+
+
+   Leukozyten 
+
+4.00-10.00 G./L
+
+* 10.63 
+
+   Thrombozyten 
+
+150-400 G./L
+
+311 
+
+   Erythrozyten 
+
+4.0-5.0 T/L
+
+4.6 
+
+   Hämoglobin 
+
+12.0-16.0 g/dL
+
+13.6 
+
+   Hämatokrit 
+
+36.0-44.0 %
+
+39.3 
+
+   MCV 
+
+80.0-96.0 fL
+
+85.1 
+
+   MCH 
+
+26.0-34.0 pg
+
+29.4 
+
+   MCHC 
+
+32.0-36.0 g/dL
+
+34.6 
+
+   RDW-CV 
+
+11.5-14.5 %
+
+13.6 
+
+   Neutroph. Gran. abs. 
+
+1.90-8.00 G./L
+
+7.73 
+
+   Lymphozyten abs. 
+
+0.80-3.50 G./L
+
+1.84 
+
+   Monozyten abs. 
+
+0.20-0.70 G./L
+
+* 0.95 
+
+   Eosinophile Gr. abs. 
+
+0.00-0.40 G./L
+
+0.07 
+
+   Basophile Gr.abs. 
+
+0.00-0.20 G./L
+
+0.04 
+
+   Gran., unreife abs. 
+
+-0.10 G./L
+
+0.05 
+
+   Neutroph. Gran. rel. 
+
+50.0-70.0 %
+
+* 72.7 
+
+   Lymphozyten rel. 
+
+22.0-50.0 %
+
+* 17.3 
+
+   Monozyten rel. 
+
+2.0-9.0 %
+
+8.9 
+
+   Eosinophile Gr. rel. 
+
+1.0-4.0 %
+
+* 0.7 
+
+   Basophile Gr.rel. 
+
+0.0-1.5 %
+
+0.4 
+
+   Gran., unreife rel. 
+
+-1 %
+
+0.5 
+
+   Normoblast.(NRBC)Rt. 
+
+-5 /100 Leuko
+
+0.0 
+
+   MPV 
+
+7.2-11.1 fL
+
+10.2 
+
+
+
+
+
+
+
+13.08.23
+13:18 
+
+Gerinnung/HÃ¤mostaseologie 
+
+
+
+   PTZ (Prothrombinz.) 
+
+70-130 %
+
+84 
+
+   INR 
+
+- -
+
+1.0 
+
+   aPTT 
+
+23.0-37.0 sek
+
+26.8 
+
+   Fibrinogen 
+
+2.13-3.93 g/L
+
+* 4.00 
+
+
+
+ 
+
+Kommentare zu Analyten:
+
+ 
+
+13.08.23 13:18
+
+INR
+
+INR nur gültig bei oraler Antikoagulation (mit Vitamin K Antagonisten)
+
+
+
+
+
+
+
+13.08.23
+13:18 
+
+13.08.23
+13:47 
+
+Klinische Chemie/Proteindiagnostik 
+
+
+
+
+
+   CRP 
+
+-5 mg/L
+
+<1.0 
+
+ 
+
+   Natrium 
+
+136-145 mmol/L
+
+* 135 
+
+ 
+
+   Kalium 
+
+3.5-5.1 mmol/L
+
+4.4 
+
+ 
+
+   Chlorid 
+
+98-107 mmol/L
+
+* 94 
+
+ 
+
+   Calcium 
+
+2.15-2.58 mmol/L
+
+2.46 
+
+ 
+
+   Phosphat 
+
+0.74-1.52 mmol/L
+
+1.05 
+
+ 
+
+   Kreatinin 
+
+0.5-1.2 mg/dL
+
+0.60 
+
+ 
+
+   GFR/1.7m2KO (CKDEPI) 
+
+60- mL/min/1.7m2
+
+97 
+
+ 
+
+   BUN 
+
+8-20 mg/dL
+
+8 
+
+ 
+
+   Harnsäure 
+
+2.6-6 mg/dL
+
+3.3 
+
+ 
+
+   CK 
+
+-168 U/L
+
+* 240 
+
+ 
+
+   Troponin I-hs 
+
+-15.60 ng/L
+
+ 
+
+1.30 
+
+   NT-pro-BNP 
+
+-125 pg/mL
+
+ 
+
+53.7 
+
+   ASAT (GOT) 
+
+-35 U/L
+
+24 
+
+ 
+
+   ALAT (GPT) 
+
+-35 U/L
+
+7 
+
+ 
+
+   Gamma-GT 
+
+-38 U/L
+
+12 
+
+ 
+
+   Alk.Phosphatase (AP) 
+
+46-122 U/L
+
+102 
+
+ 
+
+   Cholinesterase 
+
+4000-12000 U/L
+
+10625 
+
+ 
+
+   Bilirubin 
+
+0.2-1.2 mg/dL
+
+0.65 
+
+ 
+
+   Lipase 
+
+-60 U/L
+
+20.6 
+
+ 
+
+   LDH 
+
+125-220 U/L
+
+* 260 
+
+ 
+
+   Glucose 
+
+80-115 mg/dL
+
+86 
+
+ 
+
+   Triglyceride 
+
+-150 mg/dL
+
+83 
+
+ 
+
+   Totalprotein 
+
+62-81 g/L
+
+75 
+
+ 
+
+
+
+ 
+
+Kommentare zu Analyten:
+
+ 
+
+13.08.23 13:18
+
+Alk.Phosphatase (AP)
+
+Achtung, aufgrund der Reagenzumstellung ergeben sich bei der alkalischen Phosphatase geänderte Referenzbereiche.
+
+
+
+ 
+
+Kommentare zu Gesamtbefunden:
+
+ 
+
+13.08.23 13:18
+
+
+
+Hämolyse-Index [HAEM_INDEX]: 45

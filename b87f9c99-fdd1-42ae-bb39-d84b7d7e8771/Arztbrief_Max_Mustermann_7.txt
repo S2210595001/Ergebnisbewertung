@@ -1,0 +1,36 @@
+Arztbrief
+
+Patientin: Frau Max Mustermann
+Geburtsdatum: 09.01.1972
+Sozialversicherungsnummer: 1234-090172
+Datum der Behandlung: 17.09.2023
+
+Diagnose:
+
+    Kopfschmerzen, Verdacht auf protrahierte Migräne ohne Aura.
+
+Durchgeführte Behandlung und Untersuchungen:
+
+    CT Schädel, CT-Angiografie Sinusvenen: Unauffällig.
+    Konsiliarbefund (Neuro): Kein Fieber, leicht erhöhter Blutdruck. Symptomatische Besserung nach Novalgin.
+
+Zusammenfassung:
+51-jährige Patientin mit Kopfschmerzen und Vordiagnose Gastritis. Unauffällige Laborbefunde. Keine Anzeichen für Sinusvenenthrombose oder Blutung im CT.
+
+Empfehlungen:
+
+    cCT und Sinusvenendarstellung empfohlen. Bei Beschwerdefreiheit Entlassung möglich.
+    MRT-Untersuchungen im niedergelassenen Bereich.
+    Verschreibung von Novalgin 500mg Tabletten.
+    Bei neuen Symptomen sofortige Wiedervorstellung.
+
+Medikamente:
+
+    Novalgin 500mg Tabletten.
+
+Schlussbemerkung:
+Wir wünschen Frau Mustermann eine schnelle Genesung und stehen für Rückfragen jederzeit zur Verfügung.
+
+Mit freundlichen Grüßen,
+[Name des behandelnden Arztes]
+[Name des Abteilungsvorstands]
