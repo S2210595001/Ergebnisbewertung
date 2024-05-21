@@ -134,7 +134,8 @@ def main():
 
     # evaluate structure
     structure_dict = evaluate_structure(generated_output_text)
-    # print_results(structure_dict, "structure")
+    #print_results(structure_dict, "structure")
+
 
     # evaluate correctness
     # correctness_dict = evaluate_correctness(structure_dict, input_text, generated_output_text)
@@ -173,8 +174,15 @@ def main():
     diagnosis_regex = "Diagnose:([\w\W]+)Durchgeführte Behandlung:"
     diagnosis_match = re.search(diagnosis_regex, generated_output_text)
     if diagnosis_match is not None:
-        diagnosis = diagnosis_match.group(1)
-        # print(diagnosis)
+        diagnoses = diagnosis_match.group(1)
+        diagnosis_list = diagnoses.split("\n")      # split result by lines, multiple diagnoses are possible
+        element_to_remove = ''
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+        element_to_remove = ' '
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+        #print(diagnosis_list)
 
     # TODO: correctness of treatment
     # extract treatment
@@ -182,7 +190,7 @@ def main():
     treatment_match = re.search(treatment_regex, generated_output_text)
     if treatment_match is not None:
         treatment = treatment_match.group(1)
-        # print(treatment)
+        #print(treatment)
 
     # TODO: correctness of summary
     # laborwerte überprüfen, überprüfen ob wirklich erhöht oder nicht
@@ -191,8 +199,7 @@ def main():
     summary_match = re.search(summary_regex, generated_output_text)
     if summary_match is not None:
         summary = summary_match.group(1)
-        # correctness_dict["hospital_data"] = 5
-        # print("hospital data is correct")
+        #print(summary)
 
     # TODO: correctness of recommendation
     # extract recommendation
@@ -200,7 +207,7 @@ def main():
     recommendation_match = re.search(recommendation_regex, generated_output_text)
     if recommendation_match is not None:
         recommendation = recommendation_match.group(1)
-        # print(recommendation)
+        #print(recommendation)
 
     # TODO: correctness of medication
     #  alle aufgelisteten medikamente müssen im input vorkommen
@@ -212,7 +219,7 @@ def main():
     medication_match = re.search(medication_regex, generated_output_text)
     if medication_match is not None:
         medication = medication_match.group(1)
-        # print(medication)
+        print(medication)
 
     # ending and greetings are correct if they have the right structure
     if structure_dict["ending"] != 0:
