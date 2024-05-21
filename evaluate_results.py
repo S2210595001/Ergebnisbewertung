@@ -1,6 +1,8 @@
 import nltk
 import re
 from readability import Readability
+import bisect
+import string
 
 
 def read_files(dir_name, number_of_examples=3):
@@ -15,8 +17,7 @@ def read_files(dir_name, number_of_examples=3):
     original_output_file.close()
 
     # read generated medical report
-    generated_output_file = open(dir_name + "\\" + "Arztbrief_Max_Mustermann_" + str(number_of_examples) + ".txt", "r",
-                                 encoding="utf-8")
+    generated_output_file = open(dir_name + "\\" + "Arztbrief_Max_Mustermann_" + str(number_of_examples) + ".txt", "r", encoding="utf-8")
     generated_output_text = generated_output_file.read()
     generated_output_file.close()
     return input_text, original_output_text, generated_output_text
@@ -121,6 +122,63 @@ def print_results(result_dict, evaluation_type):
     print("The generated report has a " + evaluation_type + " score of", sum(result_dict.values()), "%.")
 
 
+def binary_search(sorted_list, target):
+    index = bisect.bisect_left(sorted_list, target)
+    if index < len(sorted_list) and sorted_list[index] == target:
+        return index
+    else:
+        return -1
+
+
+def extract_medication_names(regex, text, medication_list_full):
+    medication_names = []
+
+    # search for medication names in text
+    medication_input_match = re.search(regex, text)
+
+    if medication_input_match is not None:
+        medication = medication_input_match.group(1)
+        # TODO: error in case it is not found (no match)
+
+        # split input
+        medication_parts = medication.split("\n")
+        for part in medication_parts:
+            part.strip()
+            potential_names = part.split(" ")
+
+            # check all possible medication names
+            for potential_medication in potential_names:
+                potential_medication.strip()
+                potential_medication = potential_medication.upper()
+
+                # medication has to start with A-Z
+                if potential_medication.startswith(tuple(string.ascii_uppercase)):
+
+                    # search in list of all medication names
+                    if binary_search(medication_list_full, potential_medication) > -1:
+                        if medication_names != "" and potential_medication not in medication_names:
+                            medication_names.append(potential_medication)
+    return medication_names
+
+
+def extract_diagnosis(regex, text):
+    diagnosis_match = re.search(regex, text)
+
+    diagnosis_list = []
+    if diagnosis_match is not None:
+        diagnoses = diagnosis_match.group(1)
+        diagnosis_list = diagnoses.split("\n")  # split result by lines, multiple diagnoses are possible
+        element_to_remove = ''
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+        element_to_remove = ' '
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+
+    return diagnosis_list
+
+
+
 def main():
     # read text from files
     # dir_name = "e91d3e5c-f642-4a1f-9e63-d68e3e10a37d"
@@ -131,6 +189,15 @@ def main():
     # extract personal data
     profile_filename = dir_name + "\\" + "profile.txt"
     personal_data_dict = extract_personal_data(profile_filename)
+
+    # read list of medication names from file
+    medication_list = []
+    medication_file = open("medication_list_copy.txt", "r", encoding="utf-8")
+    for medication_name in medication_file.readlines():
+        medication_name = medication_name.strip()
+        medication_list.append(medication_name)
+    medication_file.close()
+
 
     # evaluate structure
     structure_dict = evaluate_structure(generated_output_text)
@@ -170,19 +237,17 @@ def main():
             correctness_dict["introduction"] = 5
 
     # TODO: correctness of diagnosis
-    # extract diagnosis
+    # extract diagnosis from generated output
     diagnosis_regex = "Diagnose:([\w\W]+)Durchgeführte Behandlung:"
-    diagnosis_match = re.search(diagnosis_regex, generated_output_text)
-    if diagnosis_match is not None:
-        diagnoses = diagnosis_match.group(1)
-        diagnosis_list = diagnoses.split("\n")      # split result by lines, multiple diagnoses are possible
-        element_to_remove = ''
-        while element_to_remove in diagnosis_list:
-            diagnosis_list.remove(element_to_remove)
-        element_to_remove = ' '
-        while element_to_remove in diagnosis_list:
-            diagnosis_list.remove(element_to_remove)
-        #print(diagnosis_list)
+    diagnosis_output = extract_diagnosis(diagnosis_regex, generated_output_text)
+    #print(diagnosis_output)
+
+    # extract diagnosis from input
+    diagnosis_input_regex = "Diagnose:([\w\W]+)Dekurs:"
+    diagnosis_input = extract_diagnosis(diagnosis_input_regex, input_text)
+
+    #print(diagnosis_input)
+    # TODO: add to dict
 
     # TODO: correctness of treatment
     # extract treatment
@@ -191,6 +256,20 @@ def main():
     if treatment_match is not None:
         treatment = treatment_match.group(1)
         #print(treatment)
+
+    treatment_regex_input = "Erhobene Befunde:([\w\W]+)Anamnese:"
+    treatment_match = re.search(treatment_regex_input, input_text)
+    if treatment_match is not None:
+        treatment = treatment_match.group(1)
+        #print(treatment)
+        treatment_parts = treatment.split("\n")
+        print(treatment_parts)
+        #for part in treatment_parts:
+            #part.strip()
+            #treatment_lines = part.split(" ")
+            #print(treatment_lines)
+
+
 
     # TODO: correctness of summary
     # laborwerte überprüfen, überprüfen ob wirklich erhöht oder nicht
@@ -214,12 +293,34 @@ def main():
     #  -> also alle medikamente identifizieren, mit dosierung
     #  ev. über hauptwörter? über regex? über zeile mit mg?
     #  "dauermedikation weiter wie bisher" auch möglich
-    # extract medication
+
+    # extract medication from generated_output
     medication_regex = "Medikamente:([\w\W]+)Bitte"
-    medication_match = re.search(medication_regex, generated_output_text)
-    if medication_match is not None:
-        medication = medication_match.group(1)
-        print(medication)
+    medication_names_output = extract_medication_names(medication_regex, generated_output_text, medication_list)
+    #print(medication_names_output)
+
+    # for input search for medication in two sections
+    medication_input_regex = "Weiteres Procedere:([\w\W]+)TB für Kontrolle"
+    medication_names_input1 = extract_medication_names(medication_input_regex, input_text, medication_list)
+    medication_input_regex = "Dekurs:([\w\W]+)Therapie"
+    medication_names_input2 = extract_medication_names(medication_input_regex, input_text, medication_list)
+    medication_names_input = list(set(medication_names_input1 + medication_names_input2))
+    #print(medication_names_input)
+
+    # check for generated medication names if they can be found in the input
+    for medication_name in medication_names_output:
+        if medication_name in medication_names_input:
+            print("In Input")
+            print(medication_name)
+            # TODO: add to correctness dict or not
+            #   korrekt, wenn alle medikamente auch im input vorkommen
+            #   oder wenn keine medikamente angeführt sind, sondern nur dauermedikation
+            #   sonst nicht
+
+    # TODO: wenn "Dauermedikation wie bisher", dann ist das auch korrekt
+    #  aber nur, wenn sonst nichts angeführt ist
+
+
 
     # ending and greetings are correct if they have the right structure
     if structure_dict["ending"] != 0:
@@ -227,6 +328,8 @@ def main():
     if structure_dict["greetings"] != 0:
         correctness_dict["greetings"] = 5
     # print_results(correctness_dict, "correctness")
+
+
 
     # TODO: understandability
     #  readability
