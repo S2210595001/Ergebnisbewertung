@@ -1,0 +1,8 @@
+Geschlecht des Patienten: W
+Anrede des Patienten: Frau
+Name des Patienten: Max Mustermann
+Strasse und Hausnummer: Teststraße 31/26 
+Postleitzahl und Stadt: 1160 Wien
+Geburtsdatum: 12.01.1949
+Sozialversicherungsnummer: 1234-120149
+Datum der Behandlung: 16.09.2023

@@ -1,0 +1,327 @@
+"""
+M
+
+ 
+
+91633880AA
+
+
+
+
+
+
+
+
+
+Herrn
+
+Max Mustermann
+
+Sturzgasse 4B/17 
+
+1150 Wien
+
+
+
+Wiener Gesundheitsverbund
+
+Klinik Hietzing
+
+Abteilung für Notfallmedizin - Ambulanz
+
+1130 Wien, Wolkersbergenstraße 1
+
+Vorstand: Prim. Priv. Doz. Dr. 
+
+Tel.: +43/01/80110/2224
+
+Fax: +43/80110/2678
+
+KHI.AUF@gesundheitsverbund.at
+
+https://klinik-hietzing.gesundheitsverbund.at
+
+Ambulanter Patientenbrief
+
+Wien, 06.09.2023/ZG
+
+vidiert
+
+
+
+
+
+
+
+Wir berichten über den ambulanten Besuch von Herrn Max Mustermann, geb. am 16.01.1971, SV-Nr. 1234-160171, der am 05.09.2023 an unserer Abteilung in Behandlung war.
+
+
+
+
+
+Diagnose: 
+
+Cephalea
+
+Dissoziative Störung 
+
+Somatisierungsstörung 
+
+Depressio
+
+
+
+Durchgeführte Behandlung: 
+
+Klinische Untersuchung
+
+vBGA/Labor
+
+EKG
+
+Neurologisches Konsil
+
+Therapie:
+
+75 mg Diclofenac ad KI
+
+
+
+Zusammenfassung: 
+
+Die ambulante Betreuung des Patienten erfolgt aufgrund von seit gestern bestehenden Kopfschmerzen frontal als auch occipital mit einmaligen Erbrechen heute morgens. Zudem wird sein 1 Woche eine Amnesie beschrieben. Der Patient wurde am 30.08.23 von der ho. psychiatrischen Abteilung aufgrund einer dissoziativen Störung sowie einer Somatisierungsstörung entlassen.  
+
+
+
+Hierorts präsentiert sich der Patient kardiorespiratorisch stabil. 
+
+Der klinische Status zeigt sich im Wesentlichen unauffällig.
+
+Laborchemisch präsentieren sich im Wesentlichen keine Auffälligkeiten. Das hs-Troponin zeigt sich im Normbereich. 
+
+Zur symptomatischen Therapie erhält der Patient die oben angeführte Therapie, unter welcher es zu einer deutlichen Besserung der Kopfschmerz-Symptomatik kommt. 
+
+Bei oben beschriebener Symptomatik wird zur Begutachtung ein Facharzt für Neurologie beigezogen. Eine psychiatrische Vorstellung wird von der ho. Neurologie empfohlen. Für detailliertere Information wird auf das neurologische Konsil im Anhang verwiesen.  
+
+Nach einem ausführlichen Gespräch mit dem Patienten über eine ho. psychiatrische Vorstellung will der Patientin trotzdem entlassen werden und im Beisein von Familienangehörigen nach Hause. Ho. ist der Patient nicht suizidal. Eine ambulante Vorstellung beim Psychiater wird dem Patienten empfohlen. 
+
+Der weitere ambulante Aufenthalt gestaltete sich komplikationslos, sodass der Patient in einem kardiorespiratorisch stabilen und subjektiv gebesserten Allgemeinzustand aus der ambulanten Betreuung entlassen werden kann.
+
+
+
+Wir empfehlen: 
+
+Wir empfehlen eine ausreichende Flüssigkeitszufuhr (mind. 1,5L/Tag, Wasser, Tee, Suppe). 
+
+Wir ersuchen den Patienten um eine zeitnahe Kontrolle bei der behandelnden Allgemeinmediziner:in in den kommenden Tagen mit ggfs. Überweisung zum Psychiater. 
+
+Wir empfehlen eine zeitnahe psychiatrische Kontrolle im niedergelassenen Bereich.
+
+Bei Allgemeinzustands-Verschlechterung (Brustschmerzen, Luftnot, Herzstolpern,..) ist eine Wiedervorstellung an der Abteilung für Notfallmedizin der Klinik Hietzing (Wolkersbergenstraße 1 – Pavillon 5a, jederzeit möglich.
+
+
+
+Medikamente: 
+
+Dauermedikation weiter wie bisher. 
+
+
+
+        .
+
+Bitte suchen Sie zum nächst möglichen Zeitpunkt Ihren Hausarzt auf.
+
+Bei Verschlechterung jederzeitige Wiedervorstellung möglich.
+
+Die bisherige unveränderte Dauermedikation wurde nicht extra aufgelistet.
+
+Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung. Es liegt im Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel (Generika) zu verschreiben. 
+
+Befunde und Konsilien liegen in Kopie bei.
+
+
+
+
+
+
+
+diktiert: Dr. 
+
+
+
+
+
+vidiert: OÄ Dr. 
+
+
+
+Mit freundlichen Grüßen
+
+Der Abteilungsvorstand
+
+
+
+
+
+Prim. Priv. Doz. Dr.
+"""
+M
+
+ 
+
+91633953AA
+
+
+
+
+
+
+
+
+
+Herrn
+
+Max Mustermann
+
+Teststraße 22/TWA 
+
+1140 Wien
+
+
+
+Wiener Gesundheitsverbund
+
+Klinik Hietzing
+
+Abteilung für Notfallmedizin - Ambulanz
+
+1130 Wien, Wolkersbergenstraße 1
+
+Vorstand: Prim. Priv. Doz. Dr. 
+
+Tel.: +43/01/80110/2224
+
+Fax: +43/80110/2678
+
+KHI.AUF@gesundheitsverbund.at
+
+https://klinik-hietzing.gesundheitsverbund.at
+
+Ambulanter Patientenbrief
+
+Wien, 15.09.2023/haa
+
+vidiert
+
+
+
+
+
+
+
+Wir berichten über den ambulanten Besuch von Herrn Max Mustermann, geb. am 21.01.1989, SV-Nr. 1234-210189, der am 14.09.2023 an unserer Abteilung in Behandlung war.
+
+
+
+
+
+Diagnose: 
+
+R51 - Kopfschmerz
+
+H53.2 – Diplopie
+
+
+
+Neurofibromatose Mb. Recklinghausen Typ I
+
+Epilepsie mit Absencen
+
+Primär angeborene psychomotorische Entwicklungsstörung mit Sprachentwicklungsstörung
+
+Arterielle Hypertonie
+
+Rezidivierende Vertigo
+
+Borderline
+
+
+
+
+
+Durchgeführte Behandlung: 
+
+1 g Novalgin ad Kurzinfusion, 500 ml Elo-Mel
+
+Neurologisches Konsil
+
+CCT
+
+
+
+Zusammenfassung: 
+
+Der Patient beklagt Kopfschmerzen und Schwindel seit ca 19:00 Uhr. Keine Verschlechterung der Sehkraft, kein Tinnitus, kein Erbrechen, keine Übelkeit. Der Kopfschmerz Stirnbetont. Die Beschwerden bekannt. Auf Mexalen keine Besserung. 
+
+
+
+Im Status auffällig sind Doppelbilder beim Blick nach rechts und unten. Auf Schmerztherapie Besserung der Kopfschmerzen, allerdings nun auch Doppelbilder bei Konvergenz. Von neurologischer Seite wird ein CCT empfohlen, in diesen kein Hinweis auf eine Raumforderung, insgesamt unauffälliger Befund. 
+
+
+
+Der Patient kann daraufhin - seinem Wunsch entsprechend - wieder entlassen werden.
+
+
+
+
+
+Wir empfehlen: 
+
+C-MRT im niedergelassenen Bereich, Kontrolle beim behandelnden Neurologen.
+
+
+
+Medikamente: 
+
+Dauermedikation weiter wie bisher, Mexalen bei Schmerzen bis zu viermal täglich
+
+
+
+        .
+
+Bitte suchen Sie zum nächst möglichen Zeitpunkt Ihren Hausarzt auf.
+
+Bei Verschlechterung jederzeitige Wiedervorstellung möglich.
+
+Die bisherige unveränderte Dauermedikation wurde nicht extra aufgelistet.
+
+Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung. Es liegt im Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel (Generika) zu verschreiben. 
+
+Befunde und Konsilien liegen in Kopie bei.
+
+
+
+
+
+
+
+diktiert: OA Dr. 
+
+
+
+
+
+vidiert: OA Dr. 
+
+
+
+Mit freundlichen Grüßen
+
+Der Abteilungsvorstand
+
+
+
+
+
+Prim. Priv. Doz. Dr.
+"""

@@ -1,0 +1,8 @@
+Geschlecht des Patienten: M
+Anrede des Patienten: Herrn
+Name des Patienten: Max Mustermann
+Strasse und Hausnummer: Teststraße 22/TWA 
+Postleitzahl und Stadt: 1140 Wien
+Geburtsdatum: 21.01.1989
+Sozialversicherungsnummer: 1234-210189
+Datum der Behandlung: 14.09.2023

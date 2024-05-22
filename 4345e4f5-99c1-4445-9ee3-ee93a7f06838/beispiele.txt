@@ -1,0 +1,378 @@
+""" 
+W
+
+ 
+
+91633953AA
+
+
+
+
+
+
+
+
+
+Frau
+
+Max Mustermann
+
+Testgasse 12/10 
+
+1150 Wien
+
+
+
+Wiener Gesundheitsverbund
+
+Klinik Hietzing
+
+Abteilung für Notfallmedizin - Ambulanz
+
+1130 Wien, Wolkersbergenstraße 1
+
+Vorstand: Prim. Priv. Doz. Dr. 
+
+Tel.: +43/01/80110/2224
+
+Fax: +43/80110/2678
+
+KHI.AUF@gesundheitsverbund.at
+
+https://klinik-hietzing.gesundheitsverbund.at
+
+Ambulanter Patientenbrief
+
+Wien, 16.09.2023/ZG
+
+vidiert
+
+
+
+
+
+
+
+Wir berichten über den ambulanten Besuch von Frau Max Mustermann, geb. am 28.01.1984, SV-Nr. 1234-280184, die am 16.09.2023 an unserer Abteilung in Behandlung war.
+
+
+
+
+
+Diagnose: 
+
+Thoraxschmerz
+
+ACS-Ausschluss
+
+Migräne
+
+Ausschluss ICB
+
+V.a. Medikamentenübergebrauch und Medikamenteninduzierter Kopfschmerz
+
+
+
+Durchgeführte Behandlung: 
+
+Klinische Untersuchung
+
+vBGA/Labor
+
+EKG
+
+cCT-nativ
+
+neurologisches Konsil
+
+Therapie:
+
+2 g Novalgin ad KI
+
+1 g Paracetamol ad KI
+
+100 mg Profenid ad 250 NaCl
+
+Zusammenfassung: 
+
+Die ambulante Betreuung der Patientin erfolgt aufgrund eines Migräneanfalls bei bekannter Migräne. Doppelbilder werden beschrieben.  
+
+Anamnestisch besteht zudem ein TxS seit 3 Tagen. Dyspnoe wird ho. negiert. 
+
+
+
+Hierorts präsentiert sich die Patientin kardiorespiratorisch stabil. 
+
+SpO2 96 % bei RL, 
+
+HF: 89 /min, 
+
+RR: 103/63 mmHg,
+
+Temperatur: 37,3 °C 
+
+Blutzucker: 84 mg/dL
+
+
+
+Der klinische Status zeigt ein Absinken des linken Arms im AVV. Sonst finden sich keine Wesentlichen Auffälligkeiten. 
+
+Laborchemisch präsentieren sich im Wesentlichen keine Auffälligkeiten. Das hs-Troponin befindet sich unter der Nachweisgrenze. 
+
+Zur symptomatischen Therapie erhält die Patientin die oben angeführte Therapie, unter welcher es zu einer deutlichen Besserung der Symptomatik kommt. 
+
+Im Rahmen der POCUS der Pleura zeigt sich ein sea-shore-sign und ein Pleuragleiten beids. und somit kein Hinweis auf einen Pneumothorax. 
+
+Bei oben beschriebener Symptomatik wird eine FÄ für Neurologie zur Begutachtung beigezogen. Ein cCT zum Blutungsausschluss wird vereinbart. 
+
+Im Rahmen des durchgeführten cCT-nativ zeigt sich kein Hinweis auf eine ICB. 
+
+Der weitere ambulante Aufenthalt gestaltete sich komplikationslos, sodass die Patientin in einem kardiorespiratorisch stabilen und subjektiv gebesserten Allgemeinzustand aus der ambulanten Betreuung entlassen werden kann. 
+
+Wir empfehlen: 
+
+Wir empfehlen eine ausreichende Flüssigkeitszufuhr (mind. 1,5L/Tag, Wasser, Tee, Suppe). 
+
+Wir ersuchen die Patientin um eine zeitnahe Kontrolle bei der behandelnden Allgemeinmediziner:in in den kommenden Tagen mit Überweisung zum Kardiologen. 
+
+Wir empfehlen eine zeitnahe kardiologische Kontrolle im niedergelassenen Bereich mit Herzecho, Langzeit EKG, Carotis Duplexsonographie und ev. Ergometrie.
+
+Von ho. Neurologie empfohlen: 
+
+Indikation für Eliquis Dauertherapie prüfen
+
+Weiterbehandlung beim niedergelassenen Neurologen und Psychiater
+
+Falls möglich und Patientin motivierbar und soweit psychisch stabilisiert evtl stationären Schmerzmittelentzug mit dem niedergelassenen Neurologen besprechen und planen. Hierzu dann Vorstellung mit dieser Fragestellung in unserer Ambulanz 01 801103433
+
+Bei Allgemeinzustands-Verschlechterung (Brustschmerzen, Luftnot, Herzstolpern,..) ist eine Wiedervorstellung an der Abteilung für Notfallmedizin der Klinik Hietzing (Wolkersbergenstraße 1 – Pavillon 17, jederzeit möglich.
+
+
+
+Medikamente: 
+
+Dauermedikation weiter wie verordnet. 
+
+
+
+        .
+
+Bitte suchen Sie zum nächst möglichen Zeitpunkt Ihren Hausarzt auf.
+
+Bei Verschlechterung jederzeitige Wiedervorstellung möglich.
+
+Die bisherige unveränderte Dauermedikation wurde nicht extra aufgelistet.
+
+Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung. Es liegt im Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel (Generika) zu verschreiben. 
+
+Befunde und Konsilien liegen in Kopie bei.
+
+
+
+
+
+
+
+diktiert: Dr. 
+
+
+
+
+
+vidiert: OA Dr. 
+
+
+
+Mit freundlichen Grüßen
+
+Der Abteilungsvorstand
+
+
+
+
+
+Prim. Priv. Doz. 
+
+"""
+W
+
+ 
+
+91633880AA
+
+
+
+
+
+
+
+
+
+Frau
+
+Max Mustermann
+
+Teststraße 31/26 
+
+1160 Wien
+
+
+
+Wiener Gesundheitsverbund
+
+Klinik Hietzing
+
+Abteilung für Notfallmedizin - Ambulanz
+
+1130 Wien, Wolkersbergenstraße 1
+
+Vorstand: Prim. Priv. Doz. Dr. 
+
+Tel.: +43/01/80110/2224
+
+Fax: +43/80110/2678
+
+KHI.AUF@gesundheitsverbund.at
+
+https://klinik-hietzing.gesundheitsverbund.at
+
+Ambulanter Patientenbrief
+
+Wien, 17.09.2023/ZG
+
+vidiert
+
+
+
+
+
+
+
+Wir berichten über den ambulanten Besuch von Frau Max Mustermann, geb. am 12.01.1949, SV-Nr. 1234-120149, die am 16.09.2023 an unserer Abteilung in Behandlung war.
+
+
+
+
+
+Diagnose: 
+
+Schwindel und Kopfschmerz
+
+Hypertensive Entgleisung mit spontaner Besserung der Blutdruckwerten
+
+
+
+Durchgeführte Behandlung: 
+
+Klinische Untersuchung
+
+vBGA/Labor
+
+EKG
+
+Neurologisches Konsil
+
+Therapie:
+
+500 ml Elomel i.v.
+
+1 g Paracetamol i.v. 
+
+1 g Novalgin i.v.
+
+Zusammenfassung: 
+
+Die ambulante Betreuung der Patientin erfolgt aufgrund von seit 1 Woche langsam progredienten und seit 3 Tagen unerträglichen Kopfschmerzen von frontal nach occipital ausstrahlend, bds, drückend, als würde der Kopf platzen, Schwank/Drehschwindel, Übelkeit, mit heute 3 x Erbrechen.
+
+Anamnestisch habe die Patientin heute bis zu 200 mmHg systolischen erhöhten Blutdruck gehabt. 
+
+
+
+Hierorts präsentiert sich die Patientin kardiorespiratorisch stabil. 
+
+SpO2 95 % bei RL, 
+
+HF: 100 /min, 
+
+RR: 169/84 mmHg,
+
+Temperatur: 36,5 °C 
+
+Blutzucker: 120 mg/dL
+
+
+
+Der klinische Status zeigt sich im Wesentlichen unauffällig.
+
+Laborchemisch zeigt sich ein erhöhtes CRP und eine milde Hyponatriämie und sonst im Wesentlichen ein unauffälliger Befund. 
+
+Zur symptomatischen Therapie erhält die Patientin die oben angeführte Therapie, unter welcher es zu einer deutlichen Besserung der Symptomatik kommt. 
+
+Bei oben beschriebener Symptomatik wird eine FÄ für Neurologie zu Begutachtung beigezogen. Eine dringende Aufnahmeindikation stellt sich aus neurologischer Sicht nicht. 
+
+Bei Entlassung beträgt der Blutdruck 140/85 mmHg. 
+
+Der weitere ambulante Aufenthalt gestaltete sich komplikationslos, sodass die Patientin in einem kardiorespiratorisch stabilen und subjektiv gebesserten Allgemeinzustand aus der ambulanten Betreuung entlassen werden kann. 
+
+Wir empfehlen: 
+
+Wir empfehlen eine ausreichende Flüssigkeitszufuhr (mind. 1,5L/Tag, Wasser, Tee, Suppe) und Elektrolytzufuhr. 
+
+Wir ersuchen die Patientin um eine zeitnahe Kontrolle bei der behandelnden Allgemeinmediziner:in in den kommenden Tagen mit etwaiger Überweisung zum niedergelassenen Kardiologen zur Reevaluierung der antihypertensiven Therapie. 
+
+Regelmäßige Blutdruckmessungen 3xtgl zuhause und Führen eines Blutdrucktagebuches
+
+Von h.o. Neurologie empfohlen: 
+
+cMRT + KM im niedergelassenen Bereich (MR-Zuweisung wurde ho. ausgehändigt)
+
+konsekutiv Vorstellung in der neurologischen Ambulanz mit Terminvereinbarung 01 80110 3433
+
+Bei Allgemeinzustands-Verschlechterung (Brustschmerzen, Luftnot, Herzstolpern,..) ist eine Wiedervorstellung an der Abteilung für Notfallmedizin der Klinik Hietzing (Wolkersbergenstraße 1 – Pavillon 17, jederzeit möglich.
+
+
+
+Medikamente: 
+
+Dauermedikation weiter wie verordnet. 
+
+
+
+        .
+
+Bitte suchen Sie zum nächst möglichen Zeitpunkt Ihren Hausarzt auf.
+
+Bei Verschlechterung jederzeitige Wiedervorstellung möglich.
+
+Die bisherige unveränderte Dauermedikation wurde nicht extra aufgelistet.
+
+Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung. Es liegt im Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel (Generika) zu verschreiben. 
+
+Befunde und Konsilien liegen in Kopie bei.
+
+
+
+
+
+
+
+diktiert: Dr. 
+
+
+
+
+
+vidiert: OAtt Dr. 
+
+
+
+Mit freundlichen Grüßen
+
+Der Abteilungsvorstand
+
+
+
+
+
+Prim. Priv. Doz. Dr. 
+"""

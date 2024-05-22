@@ -1,26 +1,21 @@
-import nltk
 import re
-from readability import Readability
 import bisect
 import string
 
 
-def read_files(dir_name, number_of_examples=3):
-    # read input file
-    input_file = open(dir_name + "\\" + dir_name + "-input.txt", "r", encoding="utf-8")
-    input_text = input_file.read()
-    input_file.close()
+def read_file(file_name):
+    with open(file_name, "r", encoding="utf-8") as file:
+        file_content = file.read()
+    return file_content
 
-    # read original medical report
-    original_output_file = open(dir_name + "\\" + dir_name + "-output.txt", "r", encoding="utf-8")
-    original_output_text = original_output_file.read()
-    original_output_file.close()
 
-    # read generated medical report
-    generated_output_file = open(dir_name + "\\" + "Arztbrief_Max_Mustermann_" + str(number_of_examples) + ".txt", "r", encoding="utf-8")
-    generated_output_text = generated_output_file.read()
-    generated_output_file.close()
-    return input_text, original_output_text, generated_output_text
+def binary_search(sorted_list, word):
+    # search for word in a sorted list
+    index = bisect.bisect_left(sorted_list, word)
+    if index < len(sorted_list) and sorted_list[index] == word:
+        return index
+    else:
+        return -1
 
 
 def extract_personal_data(filename):
@@ -52,6 +47,68 @@ def extract_personal_data(filename):
             personal_data_dict["visit_date"] = data
     profile_file.close()
     return personal_data_dict
+
+
+def read_medication_file():
+    # read list of medication names from file
+    medication_list = []
+    medication_file = open("medication_list_copy.txt", "r", encoding="utf-8")
+    for medication_name in medication_file.readlines():
+        medication_name = medication_name.strip()
+        medication_list.append(medication_name)
+    medication_file.close()
+    return medication_list
+
+
+def extract_medication_names(regex, text, medication_list_full):
+    medication_names = []
+
+    # search for medication names in text
+    medication_input_match = re.search(regex, text)
+
+    if medication_input_match is not None:
+        medication = medication_input_match.group(1)
+        # TODO: error in case it is not found (no match)
+
+        # split input
+        medication_parts = medication.split("\n")
+        for part in medication_parts:
+            part.strip()
+            potential_names = part.split(" ")
+
+            # check all possible medication names
+            for potential_medication in potential_names:
+                potential_medication.strip()
+                potential_medication = potential_medication.upper()
+
+                # medication has to start with A-Z
+                if potential_medication.startswith(tuple(string.ascii_uppercase)):
+
+                    # search in list of all medication names
+                    if binary_search(medication_list_full, potential_medication) > -1:
+                        if medication_names != "" and potential_medication not in medication_names:
+                            medication_names.append(potential_medication)
+    return medication_names
+
+
+def extract_diagnosis(regex, text):
+    diagnosis_match = re.search(regex, text)
+
+    diagnosis_list = []
+    if diagnosis_match is not None:
+        diagnoses = diagnosis_match.group(1)
+        diagnosis_list = diagnoses.split("\n")  # split result by lines, multiple diagnoses are possible
+        element_to_remove = ''
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+        element_to_remove = ' '
+        while element_to_remove in diagnosis_list:
+            diagnosis_list.remove(element_to_remove)
+
+    return diagnosis_list
+
+
+# TODO: def extract_summary(), def extract_recommendations(), def extract_treatment
 
 
 def evaluate_structure(output_text):
@@ -122,81 +179,30 @@ def print_results(result_dict, evaluation_type):
     print("The generated report has a " + evaluation_type + " score of", sum(result_dict.values()), "%.")
 
 
-def binary_search(sorted_list, target):
-    index = bisect.bisect_left(sorted_list, target)
-    if index < len(sorted_list) and sorted_list[index] == target:
-        return index
-    else:
-        return -1
-
-
-def extract_medication_names(regex, text, medication_list_full):
-    medication_names = []
-
-    # search for medication names in text
-    medication_input_match = re.search(regex, text)
-
-    if medication_input_match is not None:
-        medication = medication_input_match.group(1)
-        # TODO: error in case it is not found (no match)
-
-        # split input
-        medication_parts = medication.split("\n")
-        for part in medication_parts:
-            part.strip()
-            potential_names = part.split(" ")
-
-            # check all possible medication names
-            for potential_medication in potential_names:
-                potential_medication.strip()
-                potential_medication = potential_medication.upper()
-
-                # medication has to start with A-Z
-                if potential_medication.startswith(tuple(string.ascii_uppercase)):
-
-                    # search in list of all medication names
-                    if binary_search(medication_list_full, potential_medication) > -1:
-                        if medication_names != "" and potential_medication not in medication_names:
-                            medication_names.append(potential_medication)
-    return medication_names
-
-
-def extract_diagnosis(regex, text):
-    diagnosis_match = re.search(regex, text)
-
-    diagnosis_list = []
-    if diagnosis_match is not None:
-        diagnoses = diagnosis_match.group(1)
-        diagnosis_list = diagnoses.split("\n")  # split result by lines, multiple diagnoses are possible
-        element_to_remove = ''
-        while element_to_remove in diagnosis_list:
-            diagnosis_list.remove(element_to_remove)
-        element_to_remove = ' '
-        while element_to_remove in diagnosis_list:
-            diagnosis_list.remove(element_to_remove)
-
-    return diagnosis_list
-
-
-
 def main():
     # read text from files
     # dir_name = "e91d3e5c-f642-4a1f-9e63-d68e3e10a37d"
     dir_name = "b87f9c99-fdd1-42ae-bb39-d84b7d7e8771"
+
+    # read input file
+    input_file_name = dir_name + "\\" + dir_name + "-input.txt"
+    input_text = read_file(input_file_name)
+
+    # read original medical report
+    output_file_name = dir_name + "\\" + dir_name + "-output.txt"
+    original_output_text = read_file(output_file_name)
+
+    # read generated medical report
     number_of_examples = 5
-    input_text, original_output_text, generated_output_text = read_files(dir_name, number_of_examples)
+    generated_output_file_name = dir_name + "\\" + "Arztbrief_Max_Mustermann_" + str(number_of_examples) + ".txt"
+    generated_output_text = read_file(generated_output_file_name)
 
     # extract personal data
-    profile_filename = dir_name + "\\" + "profile.txt"
-    personal_data_dict = extract_personal_data(profile_filename)
+    profile_file_name = dir_name + "\\" + "profile.txt"
+    personal_data_dict = extract_personal_data(profile_file_name)
 
     # read list of medication names from file
-    medication_list = []
-    medication_file = open("medication_list_copy.txt", "r", encoding="utf-8")
-    for medication_name in medication_file.readlines():
-        medication_name = medication_name.strip()
-        medication_list.append(medication_name)
-    medication_file.close()
+    medication_list = read_medication_file()
 
 
     # evaluate structure
@@ -204,10 +210,19 @@ def main():
     #print_results(structure_dict, "structure")
 
 
-    # evaluate correctness
+    # evaluate correctness (check that information in the generated output can be found in the input)
     # correctness_dict = evaluate_correctness(structure_dict, input_text, generated_output_text)
     correctness_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0, "treatment": 0,
                         "summary": 0, "recommendation": 0, "medication": 0, "ending": 0, "greetings": 0}
+    # print_results(correctness_dict, "correctness")
+
+    # evaluate missing information (information that is in the input but not the generated output)
+    # correctness_dict = evaluate_missingness(structure_dict, input_text, generated_output_text)
+    # missingness_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0, "treatment": 0,
+    #                    "summary": 0, "recommendation": 0, "medication": 0, "ending": 0, "greetings": 0}
+    # print_results(missingness_dict, "missingness")
+
+
 
     # correctness of personal data
     if structure_dict["personal_data"] != 0:  # no need to check for correctness if element is not there
@@ -327,34 +342,10 @@ def main():
         correctness_dict["ending"] = 5
     if structure_dict["greetings"] != 0:
         correctness_dict["greetings"] = 5
+
     # print_results(correctness_dict, "correctness")
+    # print_results for missingness
 
-
-
-    # TODO: understandability
-    #  readability
-    #  https://pypi.org/project/py-readability-metrics/
-    # r = Readability(summary + " " + recommendation + " " + medication)
-
-    # print(r.flesch_kincaid())
-    # print(r.flesch())
-    # r.gunning_fog()
-    # r.coleman_liau()
-    # r.dale_chall()
-    # r.ari()
-    # r.linsear_write()
-    # r.smog()
-    # r.spache()
-
-    # TODO: test automated metrics
-    #  score to compare text to original generated output
-    #  maybe useful for diagnose, durchgeführte behandlung, zusammenfassung, empfehlungen, medikamente
-    #  https://blog.paperspace.com/automated-metrics-for-evaluating-generated-text/
-
-    # bleu_score = nltk.translate.bleu_score.sentence_bleu([input_text], output_text)
-    # print(bleu_score)
-    #
-    # rouge score
 
 
 if __name__ == '__main__':

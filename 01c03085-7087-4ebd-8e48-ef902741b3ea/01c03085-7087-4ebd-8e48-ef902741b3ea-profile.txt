@@ -1,0 +1,8 @@
+Geschlecht des Patienten: W
+Anrede des Patienten: Frau
+Name des Patienten: Max Mustermann
+Strasse und Hausnummer: Am Schöpfwerk 33/Parz. 66 
+Postleitzahl und Stadt: 1120 Wien
+Geburtsdatum: 18.01.1957
+Sozialversicherungsnummer: 1234-180157
+Datum der Behandlung: 13.09.2023
