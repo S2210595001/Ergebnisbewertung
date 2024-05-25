@@ -20,6 +20,19 @@ def extract_and_parse_content(url):
         print("Error reading page:", response.status_code)
     return BeautifulSoup(html_content, 'html.parser')
 
+
+# find capital words
+def filter_capital_words(words):
+    medication_phrase = ""
+    for word in words:
+        if word.isupper():
+            medication_phrase = medication_phrase + word
+            medication_phrase = medication_phrase + " "
+        else:
+            break
+
+    return medication_phrase
+
 # base url to extract medication names
 base_url = "https://www.apotheken-umschau.de"
 medication_url = "/medikamente/arzneimittellisten/"
@@ -76,7 +89,8 @@ for general_pages_link in general_pages_links:
                             text = partial_medication_pages_link.get_text(strip=True)
 
                             # medication name is the first word
-                            medication_name = text.split()[0]
+                            medication_name = filter_capital_words(text.split())
+                            #print(medication_name)
 
                             # use list to filter duplicates
                             if medication_name not in medication_list:
