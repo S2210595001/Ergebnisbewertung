@@ -46,7 +46,7 @@ def main():
     # read list of medication names from file
     # only consider medication names from output
     medication_list = evaluate_results.read_medication_file()
-    medication_names_input, medication_names_output = evaluate_results.find_medication_names_in_input_output(input_text, generated_output_text, medication_list)
+    medication_names_input, medication_names_output = evaluate_results.find_medication_names(input_text, generated_output_text, medication_list)
     #print(medication_names_input, medication_names_output)
 
     # extract personal data
@@ -56,7 +56,7 @@ def main():
     #print(personal_data)
 
     # extract diagnosis
-    diagnosis_input, diagnosis_output = evaluate_results.find_diagnosis_section_in_input_output(input_text, generated_output_text)
+    diagnosis_input, diagnosis_output = evaluate_results.find_diagnosis_sections(input_text, generated_output_text)
 
 
     # text widget for input files
@@ -113,6 +113,11 @@ def main():
 # TODO:
 #   drittes Fenster für profile
 #   sollte eigentlich in erster spalte darunter sein
+
+# TODO:
+#  z.B. bei Empfehlungen: POS Keywords für sowohl Output als auch Input suchen
+#  dann alle Keywords des Outputs markieren (im Output)
+#  dann alle Keywords des Outputs, die auch im Input vorkommen, markieren (im Input)
 
 if __name__ == "__main__":
     main()

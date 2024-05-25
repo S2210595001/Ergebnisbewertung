@@ -1,7 +1,9 @@
 import re
-import bisect
 import string
+import spacy
 
+# load german spacy model
+nlp = spacy.load('de_core_news_sm')
 
 def read_file(file_name):
     with open(file_name, "r", encoding="utf-8") as file:
@@ -51,7 +53,20 @@ def read_medication_file():
     return medication_list
 
 
-def extract_medication_names(regex, text, medication_list_full):
+def extract_pos_keywords(section):
+    text = nlp(section)
+
+    # extract specific POS tags
+    pos_keywords = []
+    for token in text:
+        if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
+            keyword = token.text
+            keyword = re.sub("^-", "", keyword)
+            pos_keywords.append(keyword)
+    return pos_keywords
+
+
+def extract_medication_names_from_section(regex, text, medication_list_full):
     medication_names = []
 
     # search for medication names in text
@@ -87,24 +102,29 @@ def extract_medication_names(regex, text, medication_list_full):
     return medication_names
 
 
-def find_medication_names_in_input_output(input_text, generated_text, medication_list):
+def find_medication_names_in_input(input_text, medication_list):
+    # search for medication in two sections of input
+    medication_input_regex = "Weiteres Procedere:([\w\W]+)TB für Kontrolle"
+    medication_names_input1 = extract_medication_names_from_section(medication_input_regex, input_text, medication_list)
+    medication_input_regex = "Dekurs:([\w\W]+)Therapie"
+    medication_names_input2 = extract_medication_names_from_section(medication_input_regex, input_text, medication_list)
+    return list(set(medication_names_input1 + medication_names_input2))
+
+
+def find_medication_names_in_output(generated_output_text, medication_list):
     # extract medication from generated_output
     medication_regex = "Medikamente:([\w\W]+)Bitte"
-    medication_names_output = extract_medication_names(medication_regex, generated_text, medication_list)
-    # print(medication_names_output)
+    return extract_medication_names_from_section(medication_regex, generated_output_text, medication_list)
 
-    # for input search for medication in two sections
-    medication_input_regex = "Weiteres Procedere:([\w\W]+)TB für Kontrolle"
-    medication_names_input1 = extract_medication_names(medication_input_regex, input_text, medication_list)
-    medication_input_regex = "Dekurs:([\w\W]+)Therapie"
-    medication_names_input2 = extract_medication_names(medication_input_regex, input_text, medication_list)
-    medication_names_input = list(set(medication_names_input1 + medication_names_input2))
-    # print(medication_names_input)
+
+def find_medication_names(input_text, generated_output_text, medication_list):
+    medication_names_input = find_medication_names_in_input(input_text, medication_list)
+    medication_names_output = find_medication_names_in_output(generated_output_text, medication_list)
 
     return medication_names_input, medication_names_output
 
 
-def extract_diagnosis(regex, text):
+def extract_diagnosis_from_section(regex, text):
     diagnosis_match = re.search(regex, text)
 
     diagnosis_list = []
@@ -119,26 +139,86 @@ def extract_diagnosis(regex, text):
     return diagnosis_list
 
 
-def find_diagnosis_section_in_input_output(input_text, generated_output_text):
-    # extract diagnosis from generated output
-    diagnosis_regex = "Diagnose:[-\s]+([\w\W]+)Durchgeführte Behandlung:"
-    diagnosis_output = extract_diagnosis(diagnosis_regex, generated_output_text)
-    # print(diagnosis_output)
-
+def find_diagnosis_section_in_input(input_text):
     # extract diagnosis from input
     diagnosis_input_regex = "Diagnose:([\w\W]+)Dekurs:"
-    diagnosis_input = extract_diagnosis(diagnosis_input_regex, input_text)
-    # print(diagnosis_input)
+    return extract_diagnosis_from_section(diagnosis_input_regex, input_text)
+
+
+def find_diagnosis_section_in_output(generated_output_text):
+    # extract diagnosis from generated output
+    diagnosis_regex = "Diagnose:[-\s]+([\w\W]+)Durchgeführte Behandlung:"
+    return extract_diagnosis_from_section(diagnosis_regex, generated_output_text)
+
+
+def find_diagnosis_sections(input_text, generated_output_text):
+    diagnosis_input = find_diagnosis_section_in_input(input_text)
+    diagnosis_output = find_diagnosis_section_in_output(generated_output_text)
+
     return diagnosis_input, diagnosis_output
 
 
-# TODO: def extract_summary(), def extract_recommendations(), def extract_treatment
+def extract_keywords_from_section(regex, text):
+    recommendation_match = re.search(regex, text)
+    pos_keywords = []
+    if recommendation_match is not None:
+        recommendation = recommendation_match.group(2)
+        #print(recommendation)
+
+        # extract pos keywords from recommendation
+        pos_keywords = extract_pos_keywords(recommendation)
+        #print(pos_keywords)
+    return pos_keywords
+
+
+def find_recommendation_section_in_input(input_text):
+    # search for medication in two sections of input
+    recommendation_input_regex = "()Weiteres Procedere:([\w\W]+?)(TB für Kontrolle|Labor:)"
+    recommendations_input1 = extract_keywords_from_section(recommendation_input_regex, input_text)
+    recommendation_input_regex = "()Empf([\w\W]+)Therapie"
+    recommendations_input2 = extract_keywords_from_section(recommendation_input_regex, input_text)
+    return list(set(recommendations_input1 + recommendations_input2))
+
+
+def find_recommendation_section_in_output(generated_output_text):
+    # extract recommendation from generated output
+    #recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):([\w\W]+)Medikamente:"
+    recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):\s*\n*([\w\W]+?)\n\n"
+    return extract_keywords_from_section(recommendation_regex, generated_output_text)
+
+
+def find_recommendation_sections(input_text, generated_output_text):
+    recommendation_input = find_recommendation_section_in_input(input_text)
+    recommendation_output = find_recommendation_section_in_output(generated_output_text)
+
+    return recommendation_input, recommendation_output
+
+
+def find_summary_section_in_output(generated_output_text):
+    summary_regex = "()Zusammenfassung:([\w\W]+?)(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf|Therapie):"
+    return extract_keywords_from_section(summary_regex, generated_output_text)
+
+
+def find_summary_section_in_input(input_text):
+    # TODO: identify right sections
+    summary_regex_input = "()Anamnese:([\w\W]+?)(Status|FK):"
+    summary_input1 = extract_keywords_from_section(summary_regex_input, input_text)
+    summary_regex_input = "()Status:([\w\W]+)Befund:"
+    summary_input2 = extract_keywords_from_section(summary_regex_input, input_text)
+    return list(set(summary_input1 + summary_input2))
+
+
+def find_summary_sections(input_text, generated_output_text):
+    summary_input = find_summary_section_in_input(input_text)
+    summary_output = find_summary_section_in_output(generated_output_text)
+
+    return summary_input, summary_output
 
 
 def evaluate_structure(output_text):
     # evaluate structure
     structure_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0, "treatment": 0,
-                      "summary": 0, "recommendation": 0, "medication": 0, "ending": 0, "greetings": 0}
+                      "summary": 0, "recommendation": 0, "medication": 0, "ending": 0}
 
     # evaluate personal data
     personal_data_match = re.search("[\w\s.]+\s[\w\d/.\s]+\s+[\d]+\s[\w]+", output_text)
@@ -187,12 +267,11 @@ def evaluate_structure(output_text):
 
 
 def evaluate_correctness(structure_dict, personal_data_dict, medication_list, input_text, generated_output_text):
-    # TODO: evaluate correctness of output
     # evaluate correctness (check that information in the generated output can be found in the input)
     # correctness_dict = evaluate_correctness(structure_dict, input_text, generated_output_text)
-    correctness_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0, "treatment": 0,
-                        "summary": 0, "recommendation": 0, "medication": 0, "ending": 0, "greetings": 0}
-    # print_results(correctness_dict, "correctness")
+    correctness_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0,
+                        "diagnosis_complete": 0, "summary": 0, "recommendation": 0, "recommendations_complete": 0,
+                        "medication": 0, "medication_complete": 0, "ending": 0}
 
     # correctness of personal data
     if structure_dict["personal_data"] != 0:  # no need to check for correctness if element is not there
@@ -223,55 +302,56 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
 
 
     # check for diagnosis if it can be found in the input
-    diagnosis_input, diagnosis_output = find_diagnosis_section_in_input_output(input_text, generated_output_text)
+    diagnosis_input, diagnosis_output = find_diagnosis_sections(input_text, generated_output_text)
     correct_diagnosis = True
-    for medication_name_output in diagnosis_output:
-        if medication_name_output not in diagnosis_input:
+    for diagnosis in diagnosis_output:
+        if diagnosis not in diagnosis_input:
             correct_diagnosis = False
     if correct_diagnosis:
         correctness_dict["diagnosis"] = 15
 
-
-    # TODO: correctness of treatment
-    # extract treatment
-    treatment_regex = "Durchgeführte Behandlung:([\w\W]+)Zusammenfassung:"
-    treatment_match = re.search(treatment_regex, generated_output_text)
-    if treatment_match is not None:
-        treatment = treatment_match.group(1)
-        # print(treatment)
-
-    treatment_regex_input = "Erhobene Befunde:([\w\W]+)Anamnese:"
-    treatment_match = re.search(treatment_regex_input, input_text)
-    if treatment_match is not None:
-        treatment = treatment_match.group(1)
-        # print(treatment)
-        treatment_parts = treatment.split("\n")
-        # print(treatment_parts)
-        # for part in treatment_parts:
-        # part.strip()
-        # treatment_lines = part.split(" ")
-        # print(treatment_lines)
-
-    # TODO: correctness of summary
-    # laborwerte überprüfen, überprüfen ob wirklich erhöht oder nicht
-    # extract summary
-    summary_regex = "Zusammenfassung:([\w\W]+)(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):"
-    summary_match = re.search(summary_regex, generated_output_text)
-    if summary_match is not None:
-        summary = summary_match.group(1)
-        # print(summary)
-
-    # TODO: correctness of recommendation
-    # extract recommendation
-    recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):([\w\W]+)Medikamente:"
-    recommendation_match = re.search(recommendation_regex, generated_output_text)
-    if recommendation_match is not None:
-        recommendation = recommendation_match.group(2)
-        print(recommendation)
+    # check for diagnosis in input if it can be found in the output
+    missing_diagnosis = False
+    for diagnosis in diagnosis_input:
+        if diagnosis not in diagnosis_output:
+            missing_diagnosis = True
+    if not missing_diagnosis:
+        correctness_dict["diagnosis_complete"] = 10
 
 
+    # check correctness of summary
+    summary_input, summary_output = find_summary_sections(input_text, generated_output_text)
+    # check that a certain percentage of keywords can be found in input
+    # TODO: find optimal threshold -> 0.2 or 0.25 would work, or find better method
+    percentage_threshold = 0.2
+    correct_words = 0
+    for recommendation_output in summary_output:
+        if recommendation_output in summary_input:
+            correct_words = correct_words + 1
+    correct_percentage = correct_words / len(summary_output)
+    if correct_percentage > percentage_threshold:
+        correctness_dict["summary"] = 15
+    #print(correct_words)
+    #print(len(summary_output))
+    #print(correct_percentage)
+
+
+    # check correctness of recommendations
+    recommendations_input, recommendations_output = find_recommendation_sections(input_text, generated_output_text)
+    # check that a certain percentage of keywords can be found in input
+    percentage_threshold = 0.6
+    correct_words = 0
+    for recommendation_output in recommendations_output:
+        if recommendation_output in recommendations_input:
+            correct_words = correct_words+1
+    correct_percentage = correct_words/len(recommendations_output)
+    if correct_percentage > percentage_threshold:
+        correctness_dict["recommendation"] = 15
+
+
+    # check correctness of medication
+    medication_names_input, medication_names_output = find_medication_names(input_text, generated_output_text, medication_list)
     # check for generated medication names if they can be found in the input
-    medication_names_input, medication_names_output = find_medication_names_in_input_output(input_text, generated_output_text, medication_list)
     correct_medication = True
     for medication_name_output in medication_names_output:
         if medication_name_output not in medication_names_input:
@@ -281,6 +361,14 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     if correct_medication:
         correctness_dict["medication"] = 15
 
+    # check for medication name in input if it can be found in the output
+    missing_medication = False
+    for medication in medication_names_input:
+        if medication not in medication_names_output:
+            missing_medication = True
+    if not missing_medication:
+        correctness_dict["medication_complete"] = 10
+
 
     # ending and greetings are correct if they have the right structure
     if structure_dict["ending"] != 0:
@@ -289,18 +377,6 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
         correctness_dict["greetings"] = 5
 
     return correctness_dict
-
-
-def evaluate_missingness():
-    # TODO: check that no important information from the input is missing in the output
-    #  Ev. auch gleich gemeinsam mit correctness, ist fast das gleiche
-    print("")
-
-    # evaluate missing information (information that is in the input but not the generated output)
-    # correctness_dict = evaluate_missingness(structure_dict, input_text, generated_output_text)
-    # missingness_dict = {"personal_data": 0, "hospital_data": 0, "introduction": 0, "diagnosis": 0, "treatment": 0,
-    #                    "summary": 0, "recommendation": 0, "medication": 0, "ending": 0, "greetings": 0}
-    # print_results(missingness_dict, "missingness")
 
 
 def print_results(result_dict, evaluation_type):
@@ -314,6 +390,7 @@ def print_results(result_dict, evaluation_type):
         result_string += "\n"
     print(result_string)
     print("The generated report has a " + evaluation_type + " score of", sum(result_dict.values()), "%.")
+    print()
 
 
 ## directory names:
@@ -329,15 +406,15 @@ def print_results(result_dict, evaluation_type):
 def main():
     # read text from files
     # dir_name = "e91d3e5c-f642-4a1f-9e63-d68e3e10a37d"
-    dir_name = "4345e4f5-99c1-4445-9ee3-ee93a7f06838"
+    dir_name = "b87f9c99-fdd1-42ae-bb39-d84b7d7e8771"
 
     # read input file
     input_file_name = dir_name + "\\" + dir_name + "-input.txt"
     input_text = read_file(input_file_name)
 
     # read original medical report
-    output_file_name = dir_name + "\\" + dir_name + "-output.txt"
-    original_output_text = read_file(output_file_name)
+    #output_file_name = dir_name + "\\" + dir_name + "-output.txt"
+    #original_output_text = read_file(output_file_name)
 
     # read generated medical report
     number_of_examples = 5
@@ -352,18 +429,15 @@ def main():
     # read list of medication names from file
     medication_list = read_medication_file()
 
-
+    # --------------------------------------------------------------------------------------------------------
     # evaluate structure
     structure_dict = evaluate_structure(generated_output_text)
-    # print_results(structure_dict, "structure")
+    print_results(structure_dict, "structure")
 
     # evaluate correctness
     correctness_dict = evaluate_correctness(structure_dict, personal_data_dict, medication_list, input_text, generated_output_text)
     print_results(correctness_dict, "correctness")
 
-    # evaluate missingness
-    # missingness_dict = evaluate_missingness()
-    # print_results(missingness_dict, "missingness")
 
 
 if __name__ == '__main__':
