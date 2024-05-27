@@ -4,12 +4,31 @@ import re
 import evaluate_results
 
 
-def add_highlight_tag(highlight_words, text_widget, tag_name):
-    # highlight specific words
+def add_highlight_tag(highlight_words, text_widget, tag_name, section=""):
+    idx1 = "1.0"
+    idx2 = END
+    # find start and stop index of section
+    if section != "":
+        section_words = section.split(" ")
+        start_word = section_words[0] + " " + section_words[1]
+        end_word = section_words[len(section_words)-2] + " " + section_words[len(section_words)-1]
+
+        idx1 = text_widget.search(start_word, "1.0", stopindex=END)
+        if not idx1:
+            idx1 = "1.0"
+            print("No start index found")
+        else:
+            idx2 = text_widget.search(end_word, idx1, stopindex=END)
+            if not idx2:
+                print("No end index found")
+                idx2 = END
+
+    # highlight specific words in section
     for word in highlight_words:
-        start = "1.0"
+        #start = "1.0"
+        start = idx1
         while True:
-            pos = text_widget.search(word, start, stopindex=END)
+            pos = text_widget.search(word, start, idx2)
             if not pos:
                 break
             end = f"{pos}+{len(word)}c"
@@ -43,11 +62,13 @@ def main():
     profile_text = profile_file.read()
     profile_file.close()
 
+
     # read list of medication names from file
     # only consider medication names from output
     medication_list = evaluate_results.read_medication_file()
     medication_names_input, medication_names_output = evaluate_results.find_medication_names(input_text, generated_output_text, medication_list)
     #print(medication_names_input, medication_names_output)
+    #print(medication_names_input)
 
     # extract personal data
     personal_data_dict = evaluate_results.extract_personal_data(profile_filename)
@@ -56,41 +77,76 @@ def main():
     #print(personal_data)
 
     # extract diagnosis
-    diagnosis_input, diagnosis_output = evaluate_results.find_diagnosis_sections(input_text, generated_output_text)
+    diagnosis_section_input = evaluate_results.find_diagnosis_section_in_input(input_text)
+    diagnosis_section_output = evaluate_results.find_diagnosis_section_in_output(generated_output_text)
+    diagnosis_output = evaluate_results.extract_diagnosis_from_section(diagnosis_section_output)
+    diagnosis_input = evaluate_results.extract_diagnosis_from_section(diagnosis_section_input)
+
+    # extract recommendations
+    #recommendation_input, recommendation_output = evaluate_results.find_recommendation_sections(input_text, generated_output_text)
+    recommendation_section_input1, recommendation_section_input2 = evaluate_results.find_recommendation_section_in_input(input_text)
+    recommendation_section_output = evaluate_results.find_recommendation_section_in_output(generated_output_text)
+    recommendation_output = evaluate_results.extract_pos_keywords(recommendation_section_output)
+    recommendation_input1 = evaluate_results.extract_pos_keywords(recommendation_section_input1)
+    recommendation_input2 = evaluate_results.extract_pos_keywords(recommendation_section_input2)
+
+    # extract summary
+    #summary_input, summary_output = evaluate_results.find_summary_sections(input_text, generated_output_text)
+    summary_section_input, _ = evaluate_results.find_summary_section_in_input(input_text)
+    summary_section_output = evaluate_results.find_summary_section_in_output(generated_output_text)
+    summary_output = evaluate_results.extract_pos_keywords(summary_section_output)
+    summary_input = evaluate_results.extract_pos_keywords(summary_section_input)
+    #print(summary_output)
+
+
+    # define colors
+    yellow = "#FFF68F"
+    orange = "#FFA54F"
+    red = "#FF6347"
+    green = "#9BCD9B"
+    purple = "#CDB5CD"
 
 
     # text widget for input files
     text_widget_input = Text(root, height=10, width=10, wrap=WORD)
     # add tags for different colors
-    text_widget_input.tag_configure("medication_tag", background="orange")
-    text_widget_input.tag_configure("diagnosis_tag", background="#800080")
+    text_widget_input.tag_configure("medication_tag", background=orange)
+    text_widget_input.tag_configure("diagnosis_tag", background=red)
+    text_widget_input.tag_configure("recommendation_tag", background=green)
+    text_widget_input.tag_configure("summary_tag", background=purple)
     text_widget_input.insert(END, input_text)
-    add_highlight_tag(medication_names_output, text_widget_input, "medication_tag")
+    add_highlight_tag(medication_names_input, text_widget_input, "medication_tag")
     add_highlight_tag(diagnosis_input, text_widget_input, "diagnosis_tag")
+    add_highlight_tag(recommendation_input1, text_widget_input, "recommendation_tag", recommendation_section_input1)
+    add_highlight_tag(recommendation_input2, text_widget_input, "recommendation_tag", recommendation_section_input2)
+    add_highlight_tag(summary_input, text_widget_input, "summary_tag", summary_section_input)
+    text_widget_input.tag_raise("medication_tag")        # ensure medication tag is applied last
     text_widget_input.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
 
     # text widget for profile
     text_widget_profile = Text(root, height=10, width=10, wrap=WORD)
     # add tags for different colors
-    text_widget_profile.tag_configure("personal_data_tag", background="yellow")
-    text_widget_profile.tag_configure("medication_tag", background="orange")
+    text_widget_profile.tag_configure("personal_data_tag", background=yellow)
     text_widget_profile.insert(END, profile_text)
     add_highlight_tag(personal_data, text_widget_profile, "personal_data_tag")
-    add_highlight_tag(medication_names_output, text_widget_profile, "medication_tag")
     text_widget_profile.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
 
     # text widget for generated medical report
     text_widget_output = Text(root, height=10, width=40, wrap=WORD)
     # add tags for different colors
-    text_widget_output.tag_configure("personal_data_tag", background="yellow")
-    text_widget_output.tag_configure("medication_tag", background="orange")
-    text_widget_output.tag_configure("diagnosis_tag", background="#800080")
+    text_widget_output.tag_configure("personal_data_tag", background=yellow)
+    text_widget_output.tag_configure("medication_tag", background=orange)
+    text_widget_output.tag_configure("diagnosis_tag", background=red)
+    text_widget_output.tag_configure("recommendation_tag", background=green)
+    text_widget_output.tag_configure("summary_tag", background=purple)
     text_widget_output.insert(END, generated_output_text)
     add_highlight_tag(personal_data, text_widget_output, "personal_data_tag")
+    add_highlight_tag(diagnosis_output, text_widget_output, "diagnosis_tag", diagnosis_section_output)
+    add_highlight_tag(recommendation_output, text_widget_output, "recommendation_tag", recommendation_section_output)
+    add_highlight_tag(summary_output, text_widget_output, "summary_tag", summary_section_output)
     add_highlight_tag(medication_names_output, text_widget_output, "medication_tag")
-    add_highlight_tag(diagnosis_output, text_widget_output, "diagnosis_tag")
     text_widget_output.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="nsew")
 
     # configure resizing behavior
@@ -110,14 +166,9 @@ def main():
 # TODO:
 #  Meldung ausgeben, wenn Tags in Input und Output nicht zusammenpassen
 
-# TODO:
-#   drittes Fenster für profile
-#   sollte eigentlich in erster spalte darunter sein
 
 # TODO:
-#  z.B. bei Empfehlungen: POS Keywords für sowohl Output als auch Input suchen
-#  dann alle Keywords des Outputs markieren (im Output)
-#  dann alle Keywords des Outputs, die auch im Input vorkommen, markieren (im Input)
+#  nur bestimmte sections sollten markiert werden
 
 if __name__ == "__main__":
     main()

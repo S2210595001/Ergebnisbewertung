@@ -62,7 +62,8 @@ def extract_pos_keywords(section):
         if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
             keyword = token.text
             keyword = re.sub("^-", "", keyword)
-            pos_keywords.append(keyword)
+            if len(keyword) > 1:
+                pos_keywords.append(keyword)
     return pos_keywords
 
 
@@ -124,95 +125,120 @@ def find_medication_names(input_text, generated_output_text, medication_list):
     return medication_names_input, medication_names_output
 
 
-def extract_diagnosis_from_section(regex, text):
-    diagnosis_match = re.search(regex, text)
+def extract_diagnosis_from_section(section):
+    # split result by lines, multiple results are possible
+    diagnosis_list = section.split("\n")
 
-    diagnosis_list = []
-    if diagnosis_match is not None:
-        diagnoses = diagnosis_match.group(1)
-        diagnosis_list = diagnoses.split("\n")  # split result by lines, multiple diagnoses are possible
-        elements_to_remove = ['', ' ']
-        for element in elements_to_remove:
-            while element in diagnosis_list:
-                diagnosis_list.remove(element)
-
+    # remove unwanted elements
+    elements_to_remove = ['', ' ']
+    for element in elements_to_remove:
+        while element in diagnosis_list:
+            diagnosis_list.remove(element)
     return diagnosis_list
 
 
 def find_diagnosis_section_in_input(input_text):
     # extract diagnosis from input
     diagnosis_input_regex = "Diagnose:([\w\W]+)Dekurs:"
-    return extract_diagnosis_from_section(diagnosis_input_regex, input_text)
+    diagnosis_match = re.search(diagnosis_input_regex, input_text)
+
+    if diagnosis_match is not None:
+        diagnosis = diagnosis_match.group(1)
+        return diagnosis
+    return ""
 
 
 def find_diagnosis_section_in_output(generated_output_text):
     # extract diagnosis from generated output
     diagnosis_regex = "Diagnose:[-\s]+([\w\W]+)Durchgeführte Behandlung:"
-    return extract_diagnosis_from_section(diagnosis_regex, generated_output_text)
+    diagnosis_match = re.search(diagnosis_regex, generated_output_text)
+
+    if diagnosis_match is not None:
+        diagnosis = diagnosis_match.group(1)
+        return diagnosis
+    return ""
 
 
 def find_diagnosis_sections(input_text, generated_output_text):
-    diagnosis_input = find_diagnosis_section_in_input(input_text)
-    diagnosis_output = find_diagnosis_section_in_output(generated_output_text)
+    diagnosis_section_input = find_diagnosis_section_in_input(input_text)
+    diagnosis_input = extract_diagnosis_from_section(diagnosis_section_input)
+
+    diagnosis_section_output = find_diagnosis_section_in_output(generated_output_text)
+    diagnosis_output = extract_diagnosis_from_section(diagnosis_section_output)
 
     return diagnosis_input, diagnosis_output
 
 
-def extract_keywords_from_section(regex, text):
-    recommendation_match = re.search(regex, text)
-    pos_keywords = []
-    if recommendation_match is not None:
-        recommendation = recommendation_match.group(2)
+def extract_section(regex, text):
+    regex_match = re.search(regex, text)
+    #pos_keywords = []
+    if regex_match is not None:
+        section = regex_match.group(2)
         #print(recommendation)
 
         # extract pos keywords from recommendation
-        pos_keywords = extract_pos_keywords(recommendation)
+        #pos_keywords = extract_pos_keywords(recommendation)
         #print(pos_keywords)
-    return pos_keywords
+    #return pos_keywords
+        return section
+    return ""
 
 
 def find_recommendation_section_in_input(input_text):
     # search for medication in two sections of input
     recommendation_input_regex = "()Weiteres Procedere:([\w\W]+?)(TB für Kontrolle|Labor:)"
-    recommendations_input1 = extract_keywords_from_section(recommendation_input_regex, input_text)
+    recommendations_input1 = extract_section(recommendation_input_regex, input_text)
+
     recommendation_input_regex = "()Empf([\w\W]+)Therapie"
-    recommendations_input2 = extract_keywords_from_section(recommendation_input_regex, input_text)
-    return list(set(recommendations_input1 + recommendations_input2))
+    recommendations_input2 = extract_section(recommendation_input_regex, input_text)
+    #return list(set(recommendations_input1 + recommendations_input2))
+    return recommendations_input1, recommendations_input2
 
 
 def find_recommendation_section_in_output(generated_output_text):
     # extract recommendation from generated output
     #recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):([\w\W]+)Medikamente:"
     recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):\s*\n*([\w\W]+?)\n\n"
-    return extract_keywords_from_section(recommendation_regex, generated_output_text)
+    return extract_section(recommendation_regex, generated_output_text)
 
 
 def find_recommendation_sections(input_text, generated_output_text):
-    recommendation_input = find_recommendation_section_in_input(input_text)
-    recommendation_output = find_recommendation_section_in_output(generated_output_text)
+    recommendation_input1, recommendation_input2 = find_recommendation_section_in_input(input_text)
+    pos_keywords_input1 = extract_pos_keywords(recommendation_input1)
+    pos_keywords_input2 = extract_pos_keywords(recommendation_input2)
+    pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
 
-    return recommendation_input, recommendation_output
+    recommendation_output = find_recommendation_section_in_output(generated_output_text)
+    pos_keywords_output = extract_pos_keywords(recommendation_output)
+
+    return pos_keywords_input, pos_keywords_output
 
 
 def find_summary_section_in_output(generated_output_text):
     summary_regex = "()Zusammenfassung:([\w\W]+?)(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf|Therapie):"
-    return extract_keywords_from_section(summary_regex, generated_output_text)
+    return extract_section(summary_regex, generated_output_text)
 
 
 def find_summary_section_in_input(input_text):
     # TODO: identify right sections
     summary_regex_input = "()Anamnese:([\w\W]+?)(Status|FK):"
-    summary_input1 = extract_keywords_from_section(summary_regex_input, input_text)
+    summary_input1 = extract_section(summary_regex_input, input_text)
     summary_regex_input = "()Status:([\w\W]+)Befund:"
-    summary_input2 = extract_keywords_from_section(summary_regex_input, input_text)
-    return list(set(summary_input1 + summary_input2))
+    summary_input2 = extract_section(summary_regex_input, input_text)
+    #return list(set(summary_input1 + summary_input2))
+    return summary_input1, summary_input2
 
 
 def find_summary_sections(input_text, generated_output_text):
-    summary_input = find_summary_section_in_input(input_text)
-    summary_output = find_summary_section_in_output(generated_output_text)
+    summary_input1, summary_input2 = find_summary_section_in_input(input_text)
+    pos_keywords_input1 = extract_pos_keywords(summary_input1)
+    pos_keywords_input2 = extract_pos_keywords(summary_input2)
+    pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
 
-    return summary_input, summary_output
+    summary_output = find_summary_section_in_output(generated_output_text)
+    pos_keywords_output = extract_pos_keywords(summary_output)
+
+    return pos_keywords_input, pos_keywords_output
 
 
 def evaluate_structure(output_text):
