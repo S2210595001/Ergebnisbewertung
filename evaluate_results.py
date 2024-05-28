@@ -5,10 +5,22 @@ import spacy
 # load german spacy model
 nlp = spacy.load('de_core_news_sm')
 
+
 def read_file(file_name):
     with open(file_name, "r", encoding="utf-8") as file:
         file_content = file.read()
     return file_content
+
+
+def read_medication_file():
+    # read list of medication names from file
+    medication_list = []
+    medication_file = open("medication_list_copy.txt", "r", encoding="utf-8")
+    for medication_name in medication_file.readlines():
+        medication_name = medication_name.strip()
+        medication_list.append(medication_name)
+    medication_file.close()
+    return medication_list
 
 
 def extract_personal_data(filename):
@@ -40,31 +52,6 @@ def extract_personal_data(filename):
             personal_data_dict["visit_date"] = data
     profile_file.close()
     return personal_data_dict
-
-
-def read_medication_file():
-    # read list of medication names from file
-    medication_list = []
-    medication_file = open("medication_list_copy.txt", "r", encoding="utf-8")
-    for medication_name in medication_file.readlines():
-        medication_name = medication_name.strip()
-        medication_list.append(medication_name)
-    medication_file.close()
-    return medication_list
-
-
-def extract_pos_keywords(section):
-    text = nlp(section)
-
-    # extract specific POS tags
-    pos_keywords = []
-    for token in text:
-        if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
-            keyword = token.text
-            keyword = re.sub("^-", "", keyword)
-            if len(keyword) > 1:
-                pos_keywords.append(keyword)
-    return pos_keywords
 
 
 def extract_medication_names_from_section(regex, text, medication_list_full):
@@ -182,6 +169,20 @@ def extract_section(regex, text):
     #return pos_keywords
         return section
     return ""
+
+
+def extract_pos_keywords(section):
+    text = nlp(section)
+
+    # extract specific POS tags
+    pos_keywords = []
+    for token in text:
+        if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
+            keyword = token.text
+            keyword = re.sub("^-", "", keyword)
+            if len(keyword) > 1:
+                pos_keywords.append(keyword)
+    return pos_keywords
 
 
 def find_recommendation_section_in_input(input_text):

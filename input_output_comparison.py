@@ -159,16 +159,5 @@ def main():
     root.mainloop()
 
 
-# TODO: find highlight words
-#       extract from input or profile, then find in generated report
-#       in opposite direction (extract from report and search in input) you don't know if something is missing
-
-# TODO:
-#  Meldung ausgeben, wenn Tags in Input und Output nicht zusammenpassen
-
-
-# TODO:
-#  nur bestimmte sections sollten markiert werden
-
 if __name__ == "__main__":
     main()
