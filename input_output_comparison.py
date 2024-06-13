@@ -1,6 +1,4 @@
 from tkinter import *
-import re
-
 import evaluate_results
 
 
@@ -10,8 +8,13 @@ def add_highlight_tag(highlight_words, text_widget, tag_name, section=""):
     # find start and stop index of section
     if section != "":
         section_words = section.split(" ")
-        start_word = section_words[0] + " " + section_words[1]
-        end_word = section_words[len(section_words)-2] + " " + section_words[len(section_words)-1]
+
+        if len(section_words) > 2:
+            start_word = section_words[0] + " " + section_words[1] + " " + section_words[2]
+            end_word = section_words[len(section_words)-3] + " " + section_words[len(section_words)-2] + " " + section_words[len(section_words)-1]
+        else:
+            start_word = section_words[0]
+            end_word = section_words[len(section_words)-1]
 
         idx1 = text_widget.search(start_word, "1.0", stopindex=END)
         if not idx1:
@@ -22,6 +25,10 @@ def add_highlight_tag(highlight_words, text_widget, tag_name, section=""):
             if not idx2:
                 print("No end index found")
                 idx2 = END
+
+        if tag_name == "diagnosis_tag":         # TODO: find error with start and end word
+            idx1 = "1.0"
+            idx2 = END
 
     # highlight specific words in section
     for word in highlight_words:
@@ -36,6 +43,9 @@ def add_highlight_tag(highlight_words, text_widget, tag_name, section=""):
             start = end
 
 
+# C:\Users\magda\Documents\Studium\DSE\MA\Experimente\Experiment 13\5-1
+# 5-2, 5-3
+
 def main():
     def on_configure(event):
         # update size of text boxes when window is resized
@@ -48,16 +58,24 @@ def main():
     root.geometry("600x400")
 
     # read text from files
-    dir_name = "b87f9c99-fdd1-42ae-bb39-d84b7d7e8771"
-    input_file = open(dir_name + "\\" + dir_name + "-input.txt", "r", encoding="utf-8")
+    #dir_name = "01c03085-7087-4ebd-8e48-ef902741b3ea"
+    dir_name = "C:\\Users\\magda\\Documents\\Studium\\DSE\\MA\\Experimente\\Experiment 13"
+    file_number = "5-1"
+
+    # read input file
+    # input_file_name = dir_name + "\\" + dir_name + "-input.txt"
+    #input_file = open(dir_name + "\\" + dir_name + "-input.txt", "r", encoding="utf-8")
+    input_file = open(dir_name + "\\" + file_number + "\\" + file_number + "-input.txt", "r", encoding="utf-8")
     input_text = input_file.read()
     input_file.close()
 
-    output_file = open(dir_name + "\\" + "Arztbrief_Max_Mustermann.txt", "r", encoding="utf-8")
+    #output_file = open(dir_name + "\\" + "Arztbrief_Max_Mustermann.txt", "r", encoding="utf-8")
+    output_file = open(dir_name + "\\" + file_number + "\\" + file_number + "-output.txt", "r", encoding="utf-8")
     generated_output_text = output_file.read()
     output_file.close()
 
-    profile_filename = dir_name + "\\" + dir_name + "-profile.txt"
+    #profile_filename = dir_name + "\\" + dir_name + "-profile.txt"
+    profile_filename = dir_name + "\\" + file_number + "\\" + file_number + "-profile.txt"
     profile_file = open(profile_filename, "r", encoding="utf-8")
     profile_text = profile_file.read()
     profile_file.close()
@@ -72,15 +90,20 @@ def main():
 
     # extract personal data
     personal_data_dict = evaluate_results.extract_personal_data(profile_filename)
-    filtered_dict = {k: v for k, v in personal_data_dict.items() if k != "gender"}      # exclude gender
+    filtered_dict = {k: v for k, v in personal_data_dict.items() if k != "gender" and v != ''}      # exclude gender
     personal_data = list(filtered_dict.values())
     #print(personal_data)
 
     # extract diagnosis
     diagnosis_section_input = evaluate_results.find_diagnosis_section_in_input(input_text)
+    #print(diagnosis_section_input)
     diagnosis_section_output = evaluate_results.find_diagnosis_section_in_output(generated_output_text)
     diagnosis_output = evaluate_results.extract_diagnosis_from_section(diagnosis_section_output)
     diagnosis_input = evaluate_results.extract_diagnosis_from_section(diagnosis_section_input)
+    #print(diagnosis_input)
+    #print(diagnosis_section_input)
+    #print(diagnosis_output)
+    #print(diagnosis_section_output)
 
     # extract recommendations
     #recommendation_input, recommendation_output = evaluate_results.find_recommendation_sections(input_text, generated_output_text)
@@ -116,7 +139,7 @@ def main():
     text_widget_input.tag_configure("summary_tag", background=purple)
     text_widget_input.insert(END, input_text)
     add_highlight_tag(medication_names_input, text_widget_input, "medication_tag")
-    add_highlight_tag(diagnosis_input, text_widget_input, "diagnosis_tag")
+    add_highlight_tag(diagnosis_input, text_widget_input, "diagnosis_tag", diagnosis_section_input)
     add_highlight_tag(recommendation_input1, text_widget_input, "recommendation_tag", recommendation_section_input1)
     add_highlight_tag(recommendation_input2, text_widget_input, "recommendation_tag", recommendation_section_input2)
     add_highlight_tag(summary_input, text_widget_input, "summary_tag", summary_section_input)
@@ -148,6 +171,7 @@ def main():
     add_highlight_tag(summary_output, text_widget_output, "summary_tag", summary_section_output)
     add_highlight_tag(medication_names_output, text_widget_output, "medication_tag")
     text_widget_output.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="nsew")
+
 
     # configure resizing behavior
     root.grid_rowconfigure(0, weight=1)
