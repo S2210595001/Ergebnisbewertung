@@ -1,8 +1,0 @@
-Geschlecht des Patienten: M
-Anrede des Patienten: Herrn
-Name des Patienten: Max Mustermann
-Strasse und Hausnummer: Sturzgasse 4B/17 
-Postleitzahl und Stadt: 1150 Wien
-Geburtsdatum: 16.01.1971
-Sozialversicherungsnummer: 1234-160171
-Datum der Behandlung: 05.09.2023
