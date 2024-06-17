@@ -64,9 +64,9 @@ def extract_medication_names_from_section(regex, text, medication_list_full):
         medication = medication_input_match.group(1)
 
         # no changes in medication
-        no_changes = "Dauermedikation"
-        if no_changes in medication:
-            return [no_changes]
+        same_medication = False
+        if "Dauermedikation" in medication:
+            same_medication = True
 
         # split input
         medication_parts = medication.split("\n")
@@ -78,15 +78,18 @@ def extract_medication_names_from_section(regex, text, medication_list_full):
             # check all possible medication names
             for potential_medication in potential_names:
                 potential_medication.strip()
+                potential_medication = potential_medication.capitalize()
                 # potential_medication = potential_medication.upper()
 
                 # medication has to start with A-Z
-                if potential_medication.upper().startswith(tuple(string.ascii_uppercase)):
+                if potential_medication.startswith(tuple(string.ascii_uppercase)):
                     # check if potential medication is in list
                     if potential_medication.upper() in medication_list_full:
                         if medication_names != "" and potential_medication not in medication_names:
                             medication_names.append(potential_medication)
                             # print(potential_medication)
+        if not medication_names and same_medication:      # medication stays the same
+            return ["Dauermedikation"]
     return medication_names
 
 
@@ -122,10 +125,20 @@ def extract_diagnosis_from_section(section):
     diagnosis_list_changed = []
 
     for element in diagnosis_list:
-        element = re.sub("^\s*-", "", element)
+        element = re.sub("\.", "", element)
+        element = re.sub("^\s*-+", "", element)
+        element = re.sub("^Va", "", element)
         element = re.sub("^\s*", "", element)
         if element not in ['', ' ']:            # remove unwanted elements
-            diagnosis_list_changed.append(element)
+            if "und" in element:
+                element_parts = element.split("und")
+                for element_part in element_parts:
+                    element_part = element_part.strip()
+                    element_part = element_part[0].upper() + element_part[1:]  # make sure first letter is uppercase
+                    diagnosis_list_changed.append(element_part)
+            else:
+                element = element[0].upper() + element[1:]
+                diagnosis_list_changed.append(element)
     return diagnosis_list_changed
 
 
@@ -157,9 +170,11 @@ def find_diagnosis_section_in_output(generated_output_text):
 def find_diagnosis_sections(input_text, generated_output_text):
     diagnosis_section_input = find_diagnosis_section_in_input(input_text)
     diagnosis_input = extract_diagnosis_from_section(diagnosis_section_input)
+    #print(diagnosis_input)
 
     diagnosis_section_output = find_diagnosis_section_in_output(generated_output_text)
     diagnosis_output = extract_diagnosis_from_section(diagnosis_section_output)
+    #print(diagnosis_output)
 
     return diagnosis_input, diagnosis_output
 
@@ -184,24 +199,28 @@ def extract_pos_keywords(section):
 
     # extract specific POS tags
     pos_keywords = []
+    lemmas = []
     for token in text:
         if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
             keyword = token.text
+            lemma = token.lemma_       # lemmatization
             keyword = re.sub("^\s*-", "", keyword)
             if len(keyword) > 1:
                 pos_keywords.append(keyword)
-    return pos_keywords
+                lemmas.append(lemma)
+    return pos_keywords, lemmas
 
 
 def find_recommendation_section_in_input(input_text):
     # search for medication in two sections of input
-    recommendation_input_regex = "()Weiteres Procedere:([\w\W]+?)(TB für Kontrolle|Labor)"
+    recommendation_input_regex = "()Weiteres Procedere:([\w\W]+?)(TB für Kontrolle|Labor|$)"
     recommendations_input1 = extract_section(recommendation_input_regex, input_text)
 
-    recommendation_input_regex = "()Empf([\w\W]+)Therapie"
-    recommendations_input2 = extract_section(recommendation_input_regex, input_text)
+    #recommendation_input_regex = "()Empf([\w\W]+)Therapie"
+    #recommendations_input2 = extract_section(recommendation_input_regex, input_text)
     #return list(set(recommendations_input1 + recommendations_input2))
-    return recommendations_input1, recommendations_input2
+    #return recommendations_input1, recommendations_input2
+    return recommendations_input1
 
 
 def find_recommendation_section_in_output(generated_output_text):
@@ -212,15 +231,15 @@ def find_recommendation_section_in_output(generated_output_text):
 
 
 def find_recommendation_sections(input_text, generated_output_text):
-    recommendation_input1, recommendation_input2 = find_recommendation_section_in_input(input_text)
-    pos_keywords_input1 = extract_pos_keywords(recommendation_input1)
-    pos_keywords_input2 = extract_pos_keywords(recommendation_input2)
-    pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
-    #print(pos_keywords_input)
+    recommendation_input = find_recommendation_section_in_input(input_text)
+    _, pos_keywords_input = extract_pos_keywords(recommendation_input)
+    #pos_keywords_input2 = extract_pos_keywords(recommendation_input2)
+    #pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
+    print(pos_keywords_input)
 
     recommendation_output = find_recommendation_section_in_output(generated_output_text)
-    pos_keywords_output = extract_pos_keywords(recommendation_output)
-    #print(pos_keywords_output)
+    _, pos_keywords_output = extract_pos_keywords(recommendation_output)
+    print(pos_keywords_output)
 
     return pos_keywords_input, pos_keywords_output
 
@@ -248,12 +267,12 @@ def find_summary_section_in_input(input_text):
 
 def find_summary_sections(input_text, generated_output_text):
     summary_input1, summary_input2 = find_summary_section_in_input(input_text)
-    pos_keywords_input1 = extract_pos_keywords(summary_input1)
-    pos_keywords_input2 = extract_pos_keywords(summary_input2)
+    _, pos_keywords_input1 = extract_pos_keywords(summary_input1)
+    _, pos_keywords_input2 = extract_pos_keywords(summary_input2)
     pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
 
     summary_output = find_summary_section_in_output(generated_output_text)
-    pos_keywords_output = extract_pos_keywords(summary_output)
+    _, pos_keywords_output = extract_pos_keywords(summary_output)
 
     return pos_keywords_input, pos_keywords_output
 
@@ -264,47 +283,53 @@ def evaluate_structure(output_text):
                       "Zusammenfassung": 0, "Empfehlungen": 0, "Medikamente": 0, "Abschluss": 0, "Unterschrift": 0}
 
     # evaluate personal data
-    personal_data_match = re.search("[\w\s.]+\s[\w\d/.\s]+\s+[\d]+\s[\w]+", output_text)
+    #personal_data_match = re.search("[\w\s.]+\s[\wß\d/.\s]+\s+[\d]+\s[\w]+", output_text)
+    personal_data_match = re.search("\n[A-Za-z.]+\s*\n{1,2}[\w\s]+\s*\n{1,2}[A-Za-z/.ß\s]+\s[\d\/A-Z]+\s*\n{1,2}[\d]+\s[\w]+\n", output_text)
     if personal_data_match is not None:
-        structure_dict["Persönliche_Daten"] = 5
+        structure_dict["Persönliche_Daten"] = 10
 
     # evaluate hospital data
-    hospital_data_regex = "Wiener Gesundheitsverbund\s*Klinik Hietzing\s*[\wü\-\s]+\s*1130 Wien, Wolkersbergenstraße 1\s*Vorstand:[\w\s.\[\]]+\s*Tel.: [\d\/+]+\s*Fax: [\d\/+]+\s*KHI.AUF@gesundheitsverbund.at\s*https:\/\/klinik-hietzing.gesundheitsverbund.at\s+[-]*\s*Ambulanter Patientenbrief\s*Wien, [\d.]+"
+    hospital_data_regex = "Wiener Gesundheitsverbund\s*Klinik Hietzing\s*[\wü\-\s]+\s*1130 Wien, Wolkersbergenstraße 1\s*Vorstand:[\w\s.\[\]]+\s*Tel.: [\d\/+]+\s*Fax: [\d\/+]+\s*KHI.[\w]+@gesundheitsverbund.at\s*https:\/\/klinik-hietzing.gesundheitsverbund.at\s+[-]*\s*"
     hospital_data_match = re.search(hospital_data_regex, output_text)
     if hospital_data_match is not None:
-        structure_dict["Krankenhaus_Daten"] = 5
+        structure_dict["Krankenhaus_Daten"] = 10
     # evaluate introduction sentence
     introduction_sentence_regex = "Wir berichten über den ambulanten Besuch von [\w\s.]+, geb. am [\d.]+, SV-Nr. [\d-]+, [\w]+ am [\d.]+ an unserer Abteilung in Behandlung war."
     introduction_sentence_match = re.search(introduction_sentence_regex, output_text)
     if introduction_sentence_match is not None:
-        structure_dict["Einleitung"] = 5
+        structure_dict["Einleitung"] = 10
 
     # evaluate headings
     if "Diagnose" in output_text:
-        structure_dict["Diagnose"] = 15
+        structure_dict["Diagnose"] = 10
     if "Durchgeführte Behandlung" in output_text:
-        structure_dict["Behandlung"] = 15
+        structure_dict["Behandlung"] = 10
     if "Zusammenfassung" in output_text:
-        structure_dict["Zusammenfassung"] = 15
+        structure_dict["Zusammenfassung"] = 10
     if "Wir empfehlen" in output_text or "Empfehlungen" in output_text:
-        structure_dict["Empfehlungen"] = 15
+        structure_dict["Empfehlungen"] = 10
     if "Medikamente" in output_text:
-        structure_dict["Medikamente"] = 15
+        structure_dict["Medikamente"] = 10
 
-    # evaluate ending text
-    ending_regex = "Bitte suchen Sie zum (nächst möglichen|nächstmöglichen) Zeitpunkt Ihren Hausarzt auf.\s*Bei Verschlechterung " \
-                   "jederzeitige Wiedervorstellung möglich.\s*Die bisherige unveränderte Dauermedikation wurde nicht extra " \
-                   "aufgelistet.\s*Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung. Es liegt im " \
-                   "Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel \(Generika\) zu verschreiben.\s*" \
-                   "Befunde und Konsilien liegen in Kopie bei."
-    ending_match = re.search(ending_regex, output_text)
-    if ending_match is not None:
-        structure_dict["Abschluss"] = 5
+    # evaluate ending sentences
+    # TODO: change names, write comments
+    ending_sentences = ["Bei Verschlechterung jederzeitige Wiedervorstellung möglich.",
+                        "Die bisherige unveränderte Dauermedikation wurde nicht extra aufgelistet.",
+                        "Unser Therapievorschlag dient als Grundlage für Ihre Weiterbehandlung.",
+                        "Es liegt im Ermessen des weiterbehandelnden Arztes, wirkstoffgleiche Arzneimittel \((z.B. )*Generika\) zu verschreiben.",
+                        "Befunde und Konsilien liegen in Kopie bei.",
+                        "Bitte suchen Sie zum (nächst möglichen|nächstmöglichen) Zeitpunkt Ihren Hausarzt auf."]
+    regex_combined = "(?=.*" + ")(?=.*".join(ending_sentences) + ")"
+    # Compile the combined regular expression
+    pattern = re.compile(regex_combined, re.DOTALL)
+    match = pattern.search(output_text)
+    if match:
+        structure_dict["Abschluss"] = 10
 
     # evaluate greeting
     greeting_match = ("Mit freundlichen Grüßen\s*Der Abteilungsvorstand", output_text)
     if greeting_match is not None:
-        structure_dict["Unterschrift"] = 5
+        structure_dict["Unterschrift"] = 10
     return structure_dict
 
 
@@ -319,20 +344,20 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
                         "Medikamente_vollständig": 0, "Abschluss": 0}
 
     # correctness of personal data
-    if structure_dict["Persönliche_Daten"] != 0:  # no need to check for correctness if element is not there
+    if structure_dict["Persönliche_Daten"] != 0 and personal_data_dict["address"]:  # no need to check for correctness if element is not there
         personal_data_regex = personal_data_dict["title"] + "\s*" + personal_data_dict["name"] + "\s*" + \
                               personal_data_dict["address"].replace("/", "\/") + "\s*" + personal_data_dict["city"]
         personal_data_match = re.search(personal_data_regex, generated_output_text)
         if personal_data_match is not None:
-            correctness_dict["Persönliche_Daten"] = 5
+            correctness_dict["Persönliche_Daten"] = 10
             # print("personal data is correct")
 
     # correctness of hospital data
     if structure_dict["Krankenhaus_Daten"] != 0:
-        hospital_data_regex = "Wiener Gesundheitsverbund\s*Klinik Hietzing\s*[\wü\-\s]+\s*1130 Wien, Wolkersbergenstraße 1\s*Vorstand: [\w\s.]+\s*Tel.: \+43\/01\/80110\/2224\s*Fax: \+43/80110\/2678\s*KHI.AUF@gesundheitsverbund.at\s*https:\/\/klinik-hietzing.gesundheitsverbund.at\s*Ambulanter Patientenbrief\s*Wien, [\d.]+"
+        hospital_data_regex = "Wiener Gesundheitsverbund\s*Klinik Hietzing\s*[\wü\-\s]+\s*1130 Wien, Wolkersbergenstraße 1\s*Vorstand: [\w\s.]+\s*Tel.: \+43\/01\/80110\/2224\s*Fax: \+43/80110\/2678\s*KHI.[\w]+@gesundheitsverbund.at\s*https:\/\/klinik-hietzing.gesundheitsverbund.at\s*"
         hospital_data_match = re.search(hospital_data_regex, generated_output_text)
         if hospital_data_match is not None:
-            correctness_dict["Krankenhaus_Daten"] = 5
+            correctness_dict["Krankenhaus_Daten"] = 10
             # print("hospital data is correct")
 
     # correctness of introduction
@@ -342,8 +367,9 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
                                 personal_data_dict["name"] + ", geb. am " + personal_data_dict["birth_date"] + \
                                 ", SV-Nr. " + personal_data_dict["svnr"] + ", " + pronoun + " am " + \
                                 personal_data_dict["visit_date"] + " an unserer Abteilung in Behandlung war."
+        print(introduction_sentence)
         if introduction_sentence in generated_output_text:
-            correctness_dict["Einleitung"] = 5
+            correctness_dict["Einleitung"] = 10
 
 
     # check for diagnosis if it can be found in the input
@@ -353,7 +379,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
         if diagnosis not in diagnosis_input:
             correct_diagnosis = False
     if correct_diagnosis:
-        correctness_dict["Diagnose_korrekt"] = 15
+        correctness_dict["Diagnose_korrekt"] = 10
 
     # check for diagnosis in input if it can be found in the output
     missing_diagnosis = False
@@ -373,9 +399,10 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     for recommendation_output in summary_output:
         if recommendation_output in summary_input:
             correct_words = correct_words + 1
-    correct_percentage = correct_words / len(summary_output)
-    if correct_percentage >= percentage_threshold:
-        correctness_dict["Zusammenfassung"] = 15
+    if summary_output:
+        correct_percentage = correct_words / len(summary_output)
+        if correct_percentage >= percentage_threshold:
+            correctness_dict["Zusammenfassung"] = 10
     #print(correct_words)
     #print(len(summary_output))
     #print(correct_percentage)
@@ -384,7 +411,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     # check correctness of recommendations
     recommendations_input, recommendations_output = find_recommendation_sections(input_text, generated_output_text)
     # check that a certain percentage of keywords can be found in input
-    percentage_threshold = 0.6
+    percentage_threshold = 0.5
     correct_words = 0
     #for recommendation_output in recommendations_output:
     #    if recommendation_output in recommendations_input:
@@ -393,12 +420,14 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     #if correct_percentage > percentage_threshold:
     #    correctness_dict["Empfehlungen"] = 15
 
+    # check that recommendations are complete
     for recommendation_input in recommendations_input:
         if recommendation_input in recommendations_output:
             correct_words = correct_words+1
-    correct_percentage = correct_words/len(recommendations_input)
-    if correct_percentage >= percentage_threshold:
-        correctness_dict["Empfehlungen"] = 15
+    if recommendations_output:
+        correct_percentage = correct_words/len(recommendations_input)
+        if correct_percentage >= percentage_threshold:
+            correctness_dict["Empfehlungen_vollständig"] = 10
     #print(correct_percentage)
 
 
@@ -412,7 +441,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     if not medication_names_input and "Dauermedikation" in medication_names_output:  # no changes in medication
         correct_medication = True
     if correct_medication:
-        correctness_dict["Medikamente_korrekt"] = 15
+        correctness_dict["Medikamente_korrekt"] = 10
 
     # check for medication name in input if it can be found in the output
     missing_medication = False
@@ -422,10 +451,9 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     if not missing_medication:
         correctness_dict["Medikamente_vollständig"] = 10
 
-
-    # ending and greetings are correct if they have the right structure
+    # ending is correct if it has the right structure
     if structure_dict["Abschluss"] != 0:
-        correctness_dict["Abschluss"] = 5
+        correctness_dict["Abschluss"] = 10
 
     return correctness_dict
 
@@ -460,8 +488,8 @@ def print_results(result_dict, evaluation_type):
 def main():
     # read text from files
     #dir_name = "01c03085-7087-4ebd-8e48-ef902741b3ea"
-    dir_name = "C:\\Users\\magda\\Documents\\Studium\\DSE\\MA\\Experimente\\Experiment 13"
-    file_number = "5-1"
+    dir_name = "C:\\Users\\magda\\Documents\\Studium\\DSE\\MA\\Synthetische Daten"
+    file_number = "5-15"
 
     # read input file
     #input_file_name = dir_name + "\\" + dir_name + "-input.txt"
