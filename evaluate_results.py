@@ -92,7 +92,7 @@ def extract_medication_names_from_section(regex, text, medication_list_full):
 
 def find_medication_names_in_input(input_text, medication_list):
     # search for medication in three sections of input
-    medication_input_regex = "Weiteres Procedere:([\w\W]+)TB für Kontrolle"
+    medication_input_regex = "Weiteres Procedere:([\w\W]+)(TB für Kontrolle|Labor)"
     medication_names_input1 = extract_medication_names_from_section(medication_input_regex, input_text, medication_list)
     medication_input_regex = "Dekurs:([\w\W]+)Therapie"
     medication_names_input2 = extract_medication_names_from_section(medication_input_regex, input_text, medication_list)
@@ -124,16 +124,18 @@ def extract_diagnosis_from_section(section):
         element = re.sub("^\s*-+", "", element)
         element = re.sub("^Va", "", element)
         element = re.sub("^\s*", "", element)
-        if element not in ['', ' ']:            # remove unwanted elements
-            if "und" in element:
-                element_parts = element.split("und")
+
+        if element not in ["", " "]:            # remove unwanted elements
+            if " " in element:
+                element_parts = element.split(" ")
+                if "und" in element_parts:
+                    element_parts.remove("und")
                 for element_part in element_parts:
                     element_part = element_part.strip()
-                    element_part = element_part[0].upper() + element_part[1:]  # make sure first letter is uppercase
                     diagnosis_list_changed.append(element_part)
             else:
-                element = element[0].upper() + element[1:]
                 diagnosis_list_changed.append(element)
+
     return diagnosis_list_changed
 
 
@@ -183,7 +185,7 @@ def extract_pos_keywords(section):
     pos_keywords = []
     lemmas = []
     for token in text:
-        if token.pos_ in ['NOUN', 'PROPN', 'VERB']:
+        if token.pos_ in ["NOUN", "PROPN"]:
             keyword = token.text
             lemma = token.lemma_       # lemmatization
             keyword = re.sub("^\s*-", "", keyword)
@@ -196,9 +198,9 @@ def extract_pos_keywords(section):
 def find_recommendation_section_in_input(input_text):
     # search for medication in two sections of input
     recommendation_input_regex = "()Weiteres Procedere:([\w\W]+?)(TB für Kontrolle|Labor|$)"
-    recommendations_input1 = extract_section(recommendation_input_regex, input_text)
+    recommendations_input = extract_section(recommendation_input_regex, input_text)
 
-    return recommendations_input1
+    return recommendations_input
 
 
 def find_recommendation_section_in_output(generated_output_text):
@@ -220,7 +222,7 @@ def find_recommendation_sections(input_text, generated_output_text):
 
 
 def find_summary_section_in_output(generated_output_text):
-    summary_regex = "()Zusammenfassung[\w\s]*:\s*\n([\w\W]*?)(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf|Therapie)"
+    summary_regex = "()Zusammenfassung[\w\s]*:\s*\n([\w\W]*?)(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf|Therapie):"
     summary_output = extract_section(summary_regex, generated_output_text)
 
     return summary_output
@@ -330,23 +332,24 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
                                 personal_data_dict["name"] + ", geb. am " + personal_data_dict["birth_date"] + \
                                 ", SV-Nr. " + personal_data_dict["svnr"] + ", " + pronoun + " am " + \
                                 personal_data_dict["visit_date"] + " an unserer Abteilung in Behandlung war."
-        print(introduction_sentence)
         if introduction_sentence in generated_output_text:
             correctness_dict["Einleitung"] = 10
 
     # check for diagnosis if it can be found in the input
     diagnosis_input, diagnosis_output = find_diagnosis_sections(input_text, generated_output_text)
+    diagnosis_input_lower = [word.lower() for word in diagnosis_input]          # case of the words should not matter
+    diagnosis_output_lower = [word.lower() for word in diagnosis_output]
     correct_diagnosis = True
-    for diagnosis in diagnosis_output:
-        if diagnosis not in diagnosis_input:
+    for diagnosis in diagnosis_output_lower:
+        if diagnosis not in diagnosis_input_lower:
             correct_diagnosis = False
     if correct_diagnosis:
         correctness_dict["Diagnose_korrekt"] = 10
 
     # check for diagnosis in input if it can be found in the output
     missing_diagnosis = False
-    for diagnosis in diagnosis_input:
-        if diagnosis not in diagnosis_output:
+    for diagnosis in diagnosis_input_lower:
+        if diagnosis not in diagnosis_output_lower:
             missing_diagnosis = True
     if not missing_diagnosis:
         correctness_dict["Diagnose_vollständig"] = 10
@@ -354,7 +357,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     # check correctness of summary
     summary_input, summary_output = find_summary_sections(input_text, generated_output_text)
     # check that a certain percentage of keywords can be found in input
-    percentage_threshold = 0.2
+    percentage_threshold = 0.45
     correct_words = 0
     for recommendation_output in summary_output:
         if recommendation_output in summary_input:
@@ -367,7 +370,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     # check correctness of recommendations
     recommendations_input, recommendations_output = find_recommendation_sections(input_text, generated_output_text)
     # check that a certain percentage of keywords can be found in input
-    percentage_threshold = 0.5
+    percentage_threshold = 0.6
     correct_words = 0
     # check that recommendations are complete
     for recommendation_input in recommendations_input:
@@ -422,7 +425,7 @@ def print_results(result_dict, evaluation_type):
 def main():
     # read text from files
     dir_name = "C:\\Users\\magda\\Documents\\Studium\\DSE\\MA\\Synthetische Daten"
-    file_number = "5-15"            # 5-1 to 5-15
+    file_number = "5-1"            # 5-1 to 5-15
 
     # read input file
     input_file_name = dir_name + "\\" + file_number + "\\" + file_number + "-input.txt"
@@ -440,7 +443,7 @@ def main():
     # read list of medication names from file
     medication_list = read_medication_file()
 
-    # --------------------------------------------------------------------------------------------------------
+
     # evaluate structure
     structure_dict = evaluate_structure(generated_output_text)
     print_results(structure_dict, "structure")
