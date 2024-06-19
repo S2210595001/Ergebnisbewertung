@@ -8,7 +8,7 @@ def generate_random_numbers(minimum, maximum, count):
 
 min_number = 6
 max_number = 15
-num_examples = 8
+num_examples = 5
 
 random_numbers = generate_random_numbers(min_number, max_number, num_examples)
 
