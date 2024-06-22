@@ -8,21 +8,23 @@ class FileComparison:
         self.root = root
         self.root.title("File Comparison")
 
-        # Labels to show file names
-        self.input_label = tk.Label(root, text="Input: None")
-        self.input_label.pack()
-        self.output_label = tk.Label(root, text="Output: None")
-        self.output_label.pack()
-        self.profile_label = tk.Label(root, text="Profile: None")
-        self.profile_label.pack()
-
         # Buttons to upload files
         self.upload_input_button = tk.Button(root, text="Upload Input", command=self.upload_input)
         self.upload_input_button.pack()
-        self.upload_output_button = tk.Button(root, text="Upload Output", command=self.upload_output)
-        self.upload_output_button.pack()
+        self.input_label = tk.Label(root, text="Input: None")
+        self.input_label.pack()
         self.upload_profile_button = tk.Button(root, text="Upload Profile", command=self.upload_profile)
         self.upload_profile_button.pack()
+        self.profile_label = tk.Label(root, text="Profile: None")
+        self.profile_label.pack()
+        self.upload_output_button = tk.Button(root, text="Upload Output", command=self.upload_output)
+        self.upload_output_button.pack()
+        self.output_label = tk.Label(root, text="Output: None")
+        self.output_label.pack()
+
+        # Add some space before the compare button
+        self.spacer = tk.Frame(root, height=10)
+        self.spacer.pack()
 
         # Button to compare files
         self.compare_button = tk.Button(root, text="Compare Files", command=self.compare_files)
@@ -88,11 +90,11 @@ class FileComparison:
 
         # evaluate structure
         structure_dict = evaluate_results.evaluate_structure(self.output_content)
-        structure_score = evaluate_results.print_results(structure_dict, "structure")
+        structure_score = evaluate_results.print_results(structure_dict, "structure", False)
 
         # evaluate correctness
         correctness_dict = evaluate_results.evaluate_correctness(structure_dict, personal_data_dict, medication_list, self.input_content, self.output_content)
-        correctness_score = evaluate_results.print_results(correctness_dict, "correctness")
+        correctness_score = evaluate_results.print_results(correctness_dict, "correctness", False)
 
         # Dummy comparison logic
         # Replace this with your actual comparison logic

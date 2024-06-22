@@ -110,8 +110,8 @@ def find_medication_names_in_output(generated_output_text, medication_list):
 def find_medication_names(input_text, generated_output_text, medication_list):
     medication_names_input = find_medication_names_in_input(input_text, medication_list)
     medication_names_output = find_medication_names_in_output(generated_output_text, medication_list)
-    #print(medication_names_input)
-    #print(medication_names_output)
+    print(medication_names_input)
+    print(medication_names_output)
 
     return medication_names_input, medication_names_output
 
@@ -125,6 +125,7 @@ def extract_diagnosis_from_section(section):
         element = re.sub("\.", "", element)
         element = re.sub("^\s*-+\s*", "", element)
         element = re.sub("^Va", "", element)
+        element = re.sub("^Verdacht auf", "", element)
         element = re.sub("^\s*", "", element)
 
         if element not in ["", " "]:            # remove unwanted elements
@@ -311,6 +312,8 @@ def evaluate_structure(output_text):
         structure_dict["Pflege"] = -10
     if "Laborchemische Befunde:" in output_text:
         structure_dict["Laborchemische Befunde"] = -10
+    if "Laborergebnisse:" in output_text:
+        structure_dict["Laborergebnisse"] = -10
 
     # evaluate ending sentences
     ending_sentences = ["Bei Verschlechterung jederzeitige Wiedervorstellung möglich.",
@@ -421,6 +424,8 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
             correct_medication = False
     if not medication_names_input and "Dauermedikation" in medication_names_output:  # no changes in medication
         correct_medication = True
+    elif medication_names_input and not medication_names_output:
+        correct_medication = False
     if correct_medication:
         correctness_dict["Medikamente_korrekt"] = 10
 
@@ -439,7 +444,7 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
     return correctness_dict
 
 
-def print_results(result_dict, evaluation_type):
+def print_results(result_dict, evaluation_type, show_output=True):
     # print results and calculate percentage
     result_string = ""
     for description in result_dict:
@@ -452,9 +457,10 @@ def print_results(result_dict, evaluation_type):
         result_string += result
         result_string += "\n"
     score = sum(result_dict.values())
-    print(result_string)
-    print("The generated report has a " + evaluation_type + " score of", score, "%.")
-    print()
+    if show_output:
+        print(result_string)
+        print("The generated report has a " + evaluation_type + " score of", score, "%.")
+        print()
     return score
 
 
