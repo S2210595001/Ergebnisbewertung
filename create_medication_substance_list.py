@@ -1,14 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
-# structure:
+# structure for medication:
 # https://www.apotheken-umschau.de/medikamente/arzneimittellisten/
-#       .../arzneimittellisten/medikamente_a.html
-#       .../arzneimittellisten/medikamente_a-2.html
-#       .../arzneimittellisten/medikamente_a-3.html
+#       .../medikamente_a.html
+#       .../medikamente_a-2.html
+#       .../medikamente_a-3.html
 # ...
-#       .../arzneimittellisten/medikamente_b.html
-#       .../arzneimittellisten/medikamente_2.html
+#       .../medikamente_b.html
+#       .../medikamente_2.html
 # ...
 
 # extract html content from url
@@ -38,7 +39,7 @@ base_url = "https://www.apotheken-umschau.de"
 medication_url = "/medikamente/arzneimittellisten/"
 
 # output file for medication list
-output_file = open("medication_list.txt", "w", encoding="utf-8")
+output_file = open("medication_substance_list_complete.txt", "w", encoding="utf-8")
 
 # general medication page
 # medication pages are split into initial letters
@@ -102,6 +103,49 @@ for general_pages_link in general_pages_links:
             for medication_name in medication_list:
                 output_file.write(medication_name + "\n")
 
+
+# structure for substances:
+# https://www.apotheken-umschau.de/medikamente/wirkstofflisten/
+#       .../wirkstoffe_a.html
+#       .../wirkstoffe_b.html
+# ...
+#       .../wirkstoffe_z.html
+# ...
+
+# base url to extract substance names
+substance_url = "/medikamente/wirkstofflisten/"
+
+# general substance page
+# substance pages are split into initial letters
+
+# contains list of all general medication pages (starting with one letter)
+content = extract_and_parse_content(base_url + substance_url)
+general_pages_links = content.find_all('a', href=True)
+
+for general_pages_link in general_pages_links:          # find links to general pages for substances starting with one letter
+    general_page = general_pages_link['href']
+
+    if general_page.startswith("/medikamente/") and general_page.endswith(".html"):          # filter links for substances starting with one letter
+        substance_pages_url = base_url + general_page      # complete url
+
+        substance_pages_content = extract_and_parse_content(substance_pages_url)
+        substance_pages_links = substance_pages_content.find_all('a', href=True)      # contains links to all substance names
+
+        substance_list = []
+        for substance_pages_link in substance_pages_links:
+            specific_page = substance_pages_link['href']
+            if re.match("^/medikamente/wirkstofflisten/[\W\w]*[\d]+.html", str(specific_page)):     # filter links to substance names
+                text = substance_pages_link.get_text(strip=True)       # get text from url
+
+                words = text.split(" ")         # substance name is the first word
+                substance_name = words[0].upper()
+
+                if substance_name not in substance_list:            # use list to filter duplicates
+                    substance_list.append(substance_name)
+
+        # write medication names to file
+        for substance_name in substance_list:
+            output_file.write(substance_name + "\n")
 
 # close output file
 output_file.close()

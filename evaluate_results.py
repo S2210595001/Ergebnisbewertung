@@ -122,6 +122,7 @@ def extract_diagnosis_from_section(section):
     diagnosis_list_changed = []
 
     for element in diagnosis_list:
+        element = re.sub("\d", "", element)
         element = re.sub("\.", "", element)
         element = re.sub("^\s*-+\s*", "", element)
         element = re.sub("^Va", "", element)
@@ -169,8 +170,8 @@ def find_diagnosis_sections(input_text, generated_output_text):
     diagnosis_input = extract_diagnosis_from_section(diagnosis_section_input)
     diagnosis_section_output = find_diagnosis_section_in_output(generated_output_text)
     diagnosis_output = extract_diagnosis_from_section(diagnosis_section_output)
-    #print(diagnosis_input)
-    #print(diagnosis_output)
+    print(diagnosis_input)
+    print(diagnosis_output)
 
     return diagnosis_input, diagnosis_output
 
@@ -216,20 +217,20 @@ def find_recommendation_section_in_input(input_text):
 
 def find_recommendation_section_in_output(generated_output_text):
     # extract recommendation from generated output
-    recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf):\s*\n*([\w\W]+?)\n\n"
+    recommendation_regex = "(Empfehlungen|Wir empfehlen|Weiteres Procedere|Empf|und weiteres Procedere):\s*\n*([\w\W]+?)\n\n"
     return extract_section(recommendation_regex, generated_output_text)
 
 
 def find_recommendation_sections(input_text, generated_output_text):
     recommendation_input = find_recommendation_section_in_input(input_text)
-    _, pos_keywords_input = extract_pos_keywords(recommendation_input)
-    #print(pos_keywords_input)
+    pos_keywords_input, lemmas_input = extract_pos_keywords(recommendation_input)
+    print(pos_keywords_input)
 
     recommendation_output = find_recommendation_section_in_output(generated_output_text)
-    _, pos_keywords_output = extract_pos_keywords(recommendation_output)
-    #print(pos_keywords_output)
+    pos_keywords_output, lemmas_output = extract_pos_keywords(recommendation_output)
+    print(pos_keywords_output)
 
-    return pos_keywords_input, pos_keywords_output
+    return pos_keywords_input, lemmas_input, pos_keywords_output, lemmas_output
 
 
 def find_summary_section_in_output(generated_output_text):
@@ -240,26 +241,41 @@ def find_summary_section_in_output(generated_output_text):
 
 
 def find_summary_section_in_input(input_text):
-    summary_regex_input = "(Anamnese:|An.:)([\w\W]+?)(Status|FK):"
-    summary_input1 = extract_section(summary_regex_input, input_text)
-    summary_regex_input = "()Status:([\w\W]+)Befund:"
-    summary_input2 = extract_section(summary_regex_input, input_text)
+    summary_regex_input1 = "(Anamnese:|An.:)([\w\W]+?)(Status|FK):"
+    summary_input1 = extract_section(summary_regex_input1, input_text)
+    summary_regex_input2 = "()Befund:([\w\W]+)Diagnose:"
+    summary_input2 = extract_section(summary_regex_input2, input_text)
+    summary_regex_input3 = "()Diagnose:([\w\W]+)Dekurs:"
+    summary_input3 = extract_section(summary_regex_input3, input_text)
+    summary_regex_input4 = "()Dekurs:([\w\W]+)Therapie:"
+    summary_input4 = extract_section(summary_regex_input4, input_text)
+    summary_regex_input5 = "()Therapie:([\w\W]+)Kontrolle:"
+    summary_input5 = extract_section(summary_regex_input5, input_text)
+    summary_regex_input6 = "()Kontrolle:([\w\W]+)Pflege:"
+    summary_input6 = extract_section(summary_regex_input6, input_text)
+    summary_regex_input7 = "()Pflege:([\w\W]+)Weiteres Procedere:"
+    summary_input7 = extract_section(summary_regex_input7, input_text)
+    summary_regex_input8 = "()Weiteres Procedere:([\w\W]+)(TB für Kontrolle|Labor):"
+    summary_input8 = extract_section(summary_regex_input8, input_text)
 
-    return summary_input1, summary_input2
+    return [summary_input1, summary_input2, summary_input3, summary_input4, summary_input5, summary_input6, summary_input7, summary_input8]
 
 
 def find_summary_sections(input_text, generated_output_text):
-    summary_input1, summary_input2 = find_summary_section_in_input(input_text)
-    _, pos_keywords_input1 = extract_pos_keywords(summary_input1)
-    _, pos_keywords_input2 = extract_pos_keywords(summary_input2)
-    pos_keywords_input = list(set(pos_keywords_input1 + pos_keywords_input2))
-    #print(pos_keywords_input)
+    summary_input = find_summary_section_in_input(input_text)
+    pos_keywords_input = list()
+    lemmas_input = list()
+    for summary in summary_input:
+        pos_keywords_input_part, lemmas_input_part = extract_pos_keywords(summary)
+        pos_keywords_input = list(set(pos_keywords_input + pos_keywords_input_part))
+        lemmas_input = list(set(lemmas_input + lemmas_input_part))
+    print(pos_keywords_input)
 
     summary_output = find_summary_section_in_output(generated_output_text)
-    _, pos_keywords_output = extract_pos_keywords(summary_output)
-    #print(pos_keywords_output)
+    pos_keywords_output, lemmas_output = extract_pos_keywords(summary_output)
+    print(pos_keywords_output)
 
-    return pos_keywords_input, pos_keywords_output
+    return pos_keywords_input, lemmas_input, pos_keywords_output, lemmas_output
 
 
 def evaluate_structure(output_text):
@@ -297,23 +313,23 @@ def evaluate_structure(output_text):
     if "Medikamente:" in output_text:
         structure_dict["Medikamente"] = 10
 
-    # some header should not be there
-    if "Status:" in output_text:
-        structure_dict["Status"] = -10
+    # some headings should not be there
     if "Befund:" in output_text:
         structure_dict["Befund"] = -10
-    if "Labor:" in output_text:
-        structure_dict["Labor"] = -10
     if "Therapie:" in output_text:
         structure_dict["Therapie"] = -10
     if "Kontrolle:" in output_text:
         structure_dict["Kontrolle"] = -10
     if "Pflege:" in output_text:
         structure_dict["Pflege"] = -10
-    if "Laborchemische Befunde:" in output_text:
-        structure_dict["Laborchemische Befunde"] = -10
-    if "Laborergebnisse:" in output_text:
-        structure_dict["Laborergebnisse"] = -10
+
+    regex_match = re.search("Labor[\w ]*:", output_text)
+    if regex_match:
+        structure_dict["Labor"] = -10
+
+    regex_match = re.search("Status[\w ]*:", output_text)
+    if regex_match:
+        structure_dict["Status"] = -10
 
     # evaluate ending sentences
     ending_sentences = ["Bei Verschlechterung jederzeitige Wiedervorstellung möglich.",
@@ -387,31 +403,31 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
         correctness_dict["Diagnose_vollständig"] = 10
 
     # check correctness of summary
-    summary_input, summary_output = find_summary_sections(input_text, generated_output_text)
-    # check that a certain percentage of keywords can be found in input
-    percentage_threshold = 0.45
+    _, summary_input_lemmas, _, summary_output_lemmas = find_summary_sections(input_text, generated_output_text)
+    # check that a certain percentage of output keywords can be found in input
+    percentage_threshold = 0.64
     correct_words = 0
-    for recommendation_output in summary_output:
-        if recommendation_output in summary_input:
+    for summary_output in summary_output_lemmas:
+        if summary_output in summary_input_lemmas:
             correct_words = correct_words + 1
-    if summary_output:
-        correct_percentage = correct_words / len(summary_output)
-        print("Summary Score:", correct_percentage)
+    if summary_output_lemmas:
+        correct_percentage = correct_words / len(summary_output_lemmas)
+        print("Summary Percentage:", correct_percentage)
         if correct_percentage >= percentage_threshold:
             correctness_dict["Zusammenfassung"] = 10
 
-    # check correctness of recommendations
-    recommendations_input, recommendations_output = find_recommendation_sections(input_text, generated_output_text)
-    # check that a certain percentage of keywords can be found in input
+    # check completeness of recommendations
+    _, recommendations_input_lemmas, _, recommendations_output_lemmas = find_recommendation_sections(input_text, generated_output_text)
+    # check that a certain percentage of input keywords can be found in output
     percentage_threshold = 0.6
     correct_words = 0
     # check that recommendations are complete
-    for recommendation_input in recommendations_input:
-        if recommendation_input in recommendations_output:
+    for recommendation_input in recommendations_input_lemmas:
+        if recommendation_input in recommendations_output_lemmas:
             correct_words = correct_words+1
-    if recommendations_input:
-        correct_percentage = correct_words/len(recommendations_input)
-        print("Recommendation Score:", correct_percentage)
+    if recommendations_input_lemmas:
+        correct_percentage = correct_words/len(recommendations_input_lemmas)
+        print("Recommendation Percentage:", correct_percentage)
         if correct_percentage >= percentage_threshold:
             correctness_dict["Empfehlungen_vollständig"] = 10
 
