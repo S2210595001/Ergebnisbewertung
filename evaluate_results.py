@@ -77,10 +77,9 @@ def extract_medication_names_from_section(regex, text, medication_list_full):
             # check all possible medication names
             for potential_medication in potential_names:
                 potential_medication.strip()
-                potential_medication = potential_medication.capitalize()
 
                 # medication has to start with A-Z
-                if potential_medication.startswith(tuple(string.ascii_uppercase)):
+                if potential_medication.capitalize().startswith(tuple(string.ascii_uppercase)):
                     # check if potential medication is in list
                     if potential_medication.upper() in medication_list_full:
                         if medication_names != "" and potential_medication not in medication_names:
@@ -433,24 +432,26 @@ def evaluate_correctness(structure_dict, personal_data_dict, medication_list, in
 
     # check correctness of medication
     medication_names_input, medication_names_output = find_medication_names(input_text, generated_output_text, medication_list)
+    medication_names_input_upper = [word.upper() for word in medication_names_input]  # case of the words should not matter
+    medication_names_output_upper = [word.upper() for word in medication_names_output]
     # check for generated medication names if they can be found in the input
     correct_medication = True
-    for medication_name_output in medication_names_output:
-        if medication_name_output not in medication_names_input:
+    for medication_name_output in medication_names_output_upper:
+        if medication_name_output not in medication_names_input_upper:
             correct_medication = False
-    if not medication_names_input and "Dauermedikation" in medication_names_output:  # no changes in medication
+    if not medication_names_input_upper and "Dauermedikation" in medication_names_output_upper:  # no changes in medication
         correct_medication = True
-    elif medication_names_input and not medication_names_output:
+    elif medication_names_input_upper and not medication_names_output_upper:
         correct_medication = False
     if correct_medication:
         correctness_dict["Medikamente_korrekt"] = 10
 
     # check for medication name in input if it can be found in the output
     missing_medication = False
-    for medication in medication_names_input:
-        if medication not in medication_names_output:
+    for medication in medication_names_input_upper:
+        if medication not in medication_names_output_upper:
             missing_medication = True
-    if medication_names_input and not missing_medication:
+    if medication_names_input_upper and not missing_medication:
         correctness_dict["Medikamente_vollständig"] = 10
 
     # ending is correct if it has the right structure

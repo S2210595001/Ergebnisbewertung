@@ -4,40 +4,46 @@ from tkinter import messagebox, filedialog
 
 import evaluate_results
 
-class FileComparison:
+class FileEvaluation:
     def __init__(self, root):
         self.root = root
-        self.root.title("File Comparison")
+        self.root.title("Evaluierung")
+
+        # Configure grid weights to make the widgets resize dynamically
+        for i in range(10):
+            root.grid_rowconfigure(i, weight=1)
+        for i in range(2):
+            root.grid_columnconfigure(i, weight=1)
 
         # Buttons to upload files
-        self.upload_input_button = tk.Button(root, text="Upload Input", command=self.upload_input)
-        self.upload_input_button.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
-        self.input_label = tk.Label(root, text="Input: None")
-        self.input_label.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
-        self.upload_profile_button = tk.Button(root, text="Upload Profile", command=self.upload_profile)
-        self.upload_profile_button.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
-        self.profile_label = tk.Label(root, text="Profile: None")
-        self.profile_label.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
-        self.upload_output_button = tk.Button(root, text="Upload Output", command=self.upload_output)
-        self.upload_output_button.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
-        self.output_label = tk.Label(root, text="Output: None")
-        self.output_label.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
+        self.upload_input_button = tk.Button(root, text="Erhobene Befunde hochladen", width=25, command=self.upload_input)
+        self.upload_input_button.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="n")
+        self.input_label = tk.Label(root, text="Keine Datei ausgewählt")
+        self.input_label.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="n")
+        self.upload_profile_button = tk.Button(root, text="Profil hochladen", width=25, command=self.upload_profile)
+        self.upload_profile_button.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="n")
+        self.profile_label = tk.Label(root, text="Keine Datei ausgewählt")
+        self.profile_label.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky="n")
+        self.upload_output_button = tk.Button(root, text="Arztbrief hochladen", width=25, command=self.upload_output)
+        self.upload_output_button.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky="n")
+        self.output_label = tk.Label(root, text="Keine Datei ausgewählt")
+        self.output_label.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky="n")
 
         # Add some space before the compare button
         self.spacer = tk.Frame(root, height=10)
         self.spacer.grid(row=6, column=0, columnspan=2)
 
         # Button to compare files
-        self.compare_button = tk.Button(root, text="Compare Files", command=self.compare_files)
-        self.compare_button.grid(row=7, column=0, padx=5, pady=5)
-        self.visualize_button = tk.Button(root, text="Visualize Results", command=self.visualize_results)
-        self.visualize_button.grid(row=7, column=1, padx=5, pady=5)
+        self.compare_button = tk.Button(root, text="Überprüfung", width=15, command=self.compare_files)
+        self.compare_button.grid(row=7, column=0, padx=5, pady=5, sticky="n")
+        self.visualize_button = tk.Button(root, text="Visualisierung", width=15, command=self.visualize_results)
+        self.visualize_button.grid(row=7, column=1, padx=5, pady=5, sticky="n")
 
         # Text fields to show results
         self.structure_result_text = tk.Text(root, height=1, width=30)
-        self.structure_result_text.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
+        self.structure_result_text.grid(row=8, column=0, columnspan=2, padx=5, pady=5, sticky="n")
         self.correctness_result_text = tk.Text(root, height=1, width=30)
-        self.correctness_result_text.grid(row=9, column=0, columnspan=2, padx=5, pady=5)
+        self.correctness_result_text.grid(row=9, column=0, columnspan=2, padx=5, pady=5, sticky="n")
 
         # Initialize file paths and contents
         self.input_path = None
@@ -60,9 +66,10 @@ class FileComparison:
             if specific_string in file_path:
                 return file_path
             else:
-                messagebox.showwarning("Warning", f"Selected file does not contain '{specific_string}'. Please select another file.")
+                messagebox.showwarning("Achtung", f"Die ausgewählte Datei enthält nicht '{specific_string}'. Bitte wähle eine andere Datei.")
 
     def upload_input(self):
+        current_input_path = self.input_path
         self.input_path = self.upload_file("input")
         if self.input_path:
             self.input_label.config(text=f"Input: {self.input_path}")
@@ -75,15 +82,21 @@ class FileComparison:
                     content = content.replace("erhobene_Befunde = \"\"\"\n", "")
                     content = content.replace("\"\"\"", "")
                     self.input_content = content
+        else:
+            self.input_path = current_input_path
 
     def upload_output(self):
+        current_output_path = self.output_path
         self.output_path = self.upload_file("output")
         if self.output_path:
             self.output_label.config(text=f"Output: {self.output_path}")
             with open(self.output_path, "r", encoding="utf-8") as file:
                 self.output_content = file.read()
+        else:
+            self.output_path = current_output_path
 
     def upload_profile(self):
+        current_profile_path = self.profile_path
         self.profile_path = self.upload_file("profile")
         if self.profile_path:
             self.profile_label.config(text=f"Profile: {self.profile_path}")
@@ -92,10 +105,12 @@ class FileComparison:
 
                 # extract personal data
                 self.personal_data_dict = evaluate_results.extract_personal_data(self.profile_path)
+        else:
+            self.profile_path = current_profile_path
 
     def compare_files(self):
         if not self.input_path or not self.output_path or not self.profile_path:
-            messagebox.showerror("Error", "Please upload all three files before comparing.")
+            messagebox.showerror("Fehler", "Bitte lade alle drei Dateien hoch.")
             return
 
         # evaluate structure
@@ -108,8 +123,8 @@ class FileComparison:
         correctness_score = evaluate_results.print_results(correctness_dict, "correctness", True)
 
         # Compare files
-        structure_result = "Struktur Score: " + str(structure_score) + "%"            # Example comparison result for file 1 and file 2
-        correctness_result = "Korrektheit Score: " + str(correctness_score) + "%"       # Example comparison result for file 2 and file 3
+        structure_result = "Struktur Ergebnis: " + str(structure_score) + "%"            # Example comparison result for file 1 and file 2
+        correctness_result = "Korrektheit Ergebnis: " + str(correctness_score) + "%"       # Example comparison result for file 2 and file 3
 
         # Display results
         self.structure_result_text.delete(1.0, tk.END)
@@ -160,7 +175,7 @@ class FileComparison:
             text_widget_profile.config(width=event.width // 20, height=event.height // 20)
 
         if not self.input_path or not self.output_path or not self.profile_path:
-            messagebox.showerror("Error", "Please upload all three files before visualizing.")
+            messagebox.showerror("Fehler", "Bitte lade alle drei Dateien hoch.")
             return
 
         visualization_window = tk.Toplevel(self.root)
@@ -253,5 +268,5 @@ class FileComparison:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = FileComparison(root)
+    evaluation = FileEvaluation(root)
     root.mainloop()
